@@ -1,0 +1,15 @@
+<template>
+    <div class="icon-close" :class="{on: isOn}">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path class="fill-variable" d="M18,6c0-3.3-2.7-6-6-6S6,2.7,6,6v10.7l5,2.8V23c0,0.6,0.4,1,1,1s1-0.4,1-1v-3.4l5-2.8V6z M16,10.4l-3,1.8V9.6
+                l3-1.8V10.4z M8,7.8l3,1.8v2.7l-3-1.8V7.8z M15.9,5.5L13,7.2V2.1C14.6,2.5,15.7,3.8,15.9,5.5z M11,2.1v5.1L8.1,5.5
+                C8.3,3.8,9.4,2.5,11,2.1z M8,15.6v-2.8l3,1.8v2.7L8,15.6z M13,17.3v-2.7l3-1.8v2.8L13,17.3z"/>
+        </svg>
+    </div>
+</template>
+
+<script>
+export default {
+    props: ['isOn']
+}
+</script>

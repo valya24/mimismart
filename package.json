@@ -1,0 +1,62 @@
+{
+  "name": "mimismart_webapp",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'"
+  },
+  "dependencies": {
+    "@jaames/iro": "^5.1.5",
+    "axios": "^0.27.2",
+    "core-js": "^3.6.4",
+    "rfdc": "^1.1.4",
+    "style-resources-loader": "^1.3.3",
+    "swiper": "^5.3.6",
+    "vue": "^2.6.11",
+    "vue-i18n": "^8.0.0",
+    "vue-native-websocket": "^2.0.14",
+    "vue-router": "^3.1.5",
+    "vue2-touch-events": "^2.2.1",
+    "vuex": "^3.1.2",
+    "xml-js": "^1.6.11",
+    "xml2js": "^0.4.23",
+    "xmldom": "^0.3.0"
+  },
+  "devDependencies": {
+    "@babel/compat-data": "7.9.0",
+    "@babel/preset-env": "7.5.5",
+    "@vue/cli-plugin-babel": "^4.2.0",
+    "@vue/cli-plugin-eslint": "^4.2.0",
+    "@vue/cli-plugin-router": "^4.2.0",
+    "@vue/cli-plugin-vuex": "^4.2.0",
+    "@vue/cli-service": "^4.2.0",
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.7.2",
+    "eslint-plugin-vue": "^6.1.2",
+    "less": "^3.0.4",
+    "less-loader": "^5.0.0",
+    "vue-cli-plugin-i18n": "^0.6.1",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions"
+  ]
+}

@@ -1,0 +1,16 @@
+<template>
+	<div class="icon-ptichka-right" :class="{on: isOn}">
+		<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+			<path class="fill-variable" d="M19,22.2l-5.4-11.3l0.6-0.3l0,0l0.5-0.2l0.1-0.6l0.5-5.6l1.2,0.5c0.5,0.2,1,0,1.2-0.4c0.2-0.4,0.2-1-0.2-1.3
+	l-2.9-2.4l-0.3-0.2H14h-0.4h-0.7l-0.2,0.7l0,0l-0.2,0.7L5,12.6l-1.9,2.8l3.2-1.4l1.8-0.8l9.3,10c0.3,0.4,0.9,0.4,1.3,0.1
+	C19.1,23.2,19.2,22.6,19,22.2z M13.3,2.2L13.3,2.2L13.3,2.2L13.3,2.2z M13.3,4l-0.4,5l-0.9,0.4l-3.3,1.4L13.3,4z M11.8,11.7l2.6,5.5
+	L10,12.5L11.8,11.7z"/>
+		</svg>
+	</div>
+</template>
+
+<script>
+export default {
+	props: ['isOn']
+}
+</script>
