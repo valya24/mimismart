@@ -30,7 +30,7 @@ Vue.component('Loader', Loader)
 
 import VueNativeSock from 'vue-native-websocket';
 import { passToStoreHandler } from '@/utils/utils.js';
-Vue.use(VueNativeSock, 'wss://95.84.154.146:54441', {
+Vue.use(VueNativeSock, 'ws://95.84.154.146:54441', {
   connectManually: true,
   store: store,
   // format: 'json',

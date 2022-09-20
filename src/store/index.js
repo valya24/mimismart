@@ -438,7 +438,7 @@ export default new Vuex.Store({
   },
   actions: {
     loadLogicXML({dispatch}) {
-      axios.get('https://95.84.154.146:19580/MimiSetup/data/app.php/XmlEditor/getXml')
+      axios.get('http://95.84.154.146:19580/MimiSetup/data/app.php/XmlEditor/getXml')
         .then((response) => {
           localStorage.setItem('logic.xml', response.data)
           dispatch('parseAndSaveLogic', response.data);

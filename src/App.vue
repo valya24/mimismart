@@ -183,7 +183,7 @@ export default {
 				this.$store.dispatch("loadLogic");
 			} else {
 				let localIp = this.localIp || "127.0.0.1:55580";
-				this.$connect(`wss://${localIp}/api`);
+				this.$connect(`ws://${localIp}/api`);
 			}
 		}
 	},
@@ -223,7 +223,7 @@ export default {
 		);
 
     let apiIp = "95.84.154.146:54441";
-    this.$connect(`wss://${apiIp}`);
+    this.$connect(`ws://${apiIp}`);
     const data = localStorage.getItem('logic.xml')
     if (data) {
       this.$store.dispatch('parseAndSaveLogic', data);
