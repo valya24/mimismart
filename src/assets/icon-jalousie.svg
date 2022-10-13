@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.1.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 24 24" style="enable-background:new 0 0 24 24;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#A6ABFF;}
+	.st1{fill:#535DFF;}
+	.st2{opacity:0.5;fill:#FFFFFF;enable-background:new    ;}
+</style>
+<rect id="const" x="5" y="2" class="st0" width="14" height="20"/>
+<path id="variable" class="st1" d="M19,22H5V2h14V22z M7,20h10V4H7V20z"/>
+<g>
+	
+		<rect id="hl2" x="9.9" y="-2.1" transform="matrix(0.5933 -0.805 0.805 0.5933 -3.3598 13.189)" class="st2" width="3" height="24"/>
+	
+		<rect id="hl1" x="12.7" y="-5.5" transform="matrix(0.5933 -0.805 0.805 0.5933 0.1285 13.2494)" class="st2" width="1" height="24"/>
+</g>
+<path id="blinds" class="st1" d="M6,18h12v1H6V18z M6,16h12v1H6V16z M6,14h12v1H6V14z M6,12h12v1H6V12z M6,10h12v1H6V10z M6,8h12v1
+	H6V8z M6,6h12v1H6V6z M6,4h12v1H6V4z"/>
+</svg>

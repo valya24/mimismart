@@ -1,0 +1,17 @@
+{
+  "devices": "no devices | {n} device | {n} devices",
+
+  "On_1": "On",
+  "On_2": "On",
+  "Off_1": "Off",
+  "Off_2": "Off",
+  "always-off": "Off",
+  "Open_1": "Open",
+  "Open_2": "Open",
+
+  "Dry_1": "Dry",
+  "Dry_2": "Dry",
+
+  "Login_1": "Login",
+  "Login_2": "Login"
+}

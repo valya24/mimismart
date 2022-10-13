@@ -1,0 +1,144 @@
+.theme-dark {
+  background: #262933;
+  color: #fff;
+}
+.theme-dark .modal-device-settings .modal-contents {
+  background-color: #262933;
+  border: 2px solid #4C6CF6;
+}
+.theme-dark .modal-device-settings .tabs-nav {
+  background-color: #3B4050;
+}
+.theme-dark .icon-tile {
+  background: #353E56 !important;
+}
+.theme-dark .icon-tile.on .fill-variable {
+  fill: #fff;
+}
+.theme-dark .icon-tile.on::before {
+  background: linear-gradient(135deg, #8AA0FF 13.46%, #708bff 84.13%);
+}
+.theme-dark .--disabled .fill-variable {
+  fill: #73789f;
+}
+.theme-dark .--disabled .fill-const {
+  fill: #979BB8;
+}
+.theme-dark .on .fill-variable {
+  fill: #8AA0FF;
+}
+.theme-dark .devices-by-category::-webkit-scrollbar {
+  background: #4C5266;
+}
+.theme-dark .devices-by-category::-webkit-scrollbar-track {
+  background: #1C1E26;
+}
+.theme-dark .devices-by-category::-webkit-scrollbar-thumb {
+  background-color: #4C5266;
+  border-radius: 100px;
+  border: 4px solid #1C1E26;
+}
+.theme-dark .sidebar {
+  background: #262933;
+  border-right: 1px solid #353842;
+}
+.theme-dark .tabs-nav {
+  color: #979BB8;
+  background-color: #3B4050;
+}
+.theme-dark .tabs-nav .active,
+.theme-dark .tabs-nav .--active {
+  color: #fff;
+}
+.theme-dark .icon-tile.sensor .value,
+.theme-dark .icon-tile.sensor .value.--text-value {
+  color: #979BB8 !important;
+}
+.theme-dark .modal-head {
+  background: #4C6CF6 !important;
+  border-radius: 4px 4px 0 0;
+  padding-top: 0;
+}
+.theme-dark .modal-head .icon-close {
+  fill: #fff;
+}
+.theme-dark .modal-head .icon-tuning .fill-variable {
+  fill: #fff;
+}
+.theme-dark .modal-control-contents-centered {
+  background: #262933;
+  border: 2px solid #4C6CF6;
+}
+.theme-dark .controls-footer .label {
+  color: #979BB8;
+}
+.theme-dark .knob .knob-cir {
+  fill: #3B4050;
+  stroke: #51576d;
+}
+.theme-dark .knob .range-full {
+  stroke: #9097ad;
+}
+.theme-dark .knob .range-active {
+  stroke: #8AA0FF;
+}
+.theme-dark .knob .knob-handle::before {
+  background: #8AA0FF;
+}
+.theme-dark .knob .active-temp {
+  color: #8AA0FF !important;
+}
+.theme-dark .knob .room-temp {
+  color: #979BB8 !important;
+}
+.theme-dark .device-status-title {
+  background: #9097ad;
+  color: #000;
+}
+.theme-dark .btn-icon.rounded {
+  border-color: #676f8b;
+}
+.theme-dark .mode-select-dropdown__active-mode-title {
+  background: #353E56;
+  border-color: #8AA0FF;
+}
+.theme-dark .stepper .value {
+  color: #8AA0FF !important;
+}
+.theme-dark .connected-switch {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(0, 0, 0, 0.3) !important;
+}
+.theme-dark .notification-item {
+  background: #3B4050 !important;
+}
+.theme-dark .notification-item .col-device {
+  color: #979BB8;
+}
+.theme-dark .header .devices-by-category {
+  color: #fff !important;
+  background: #262933 !important;
+  z-index: 1;
+}
+.theme-dark .swiper-container .swiper-wrapper,
+.theme-dark .swiper-container .swiper-slide {
+  background: #262933 !important;
+}
+.theme-dark .location-head .col-title {
+  color: #A6ABFF;
+}
+.theme-dark .modal-body {
+  color: #000;
+}
+.theme-dark .light-ray {
+  stroke: #A0D7E7;
+}
+.theme-dark .floor-room-item.--active .room-name {
+  color: #8AA0FF;
+}
+.theme-dark .--disabled .mode-item.--active {
+  background: #43444a !important;
+}
+.theme-dark .stepper-title .value {
+  color: #8AA0FF !important;
+}

@@ -1,0 +1,808 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<smart-house manual-volume-control="yes" srv-ver="2">
+	<area name="test">
+		<item RS485="507:20" addr="507:247" path="scripts/test.txt" type="script"/>
+		<import-script Dimmer="507:248" RS485="507:20" Textbox="507:249" Vent="507:250" id="507" path="scripts/AC_MB_Menerga.txt"/>
+		<item addr="507:250" funs="0x00" modes="0x00" name="Vent" t-delta="50" t-min="0" type="conditioner" vane-hor="0x00" vane-ver="0x00"/>
+		<item addr="507:249" image="air-fan" length="2" name="Влажность" sub-type="dimer-lamp" type="virtual"/>
+		<item addr="507:248" length="0" sub-type="long-text" type="virtual"/>
+	</area>
+	<area name="Гостиная " name-en="" name-ru="">
+		<area name="Кухня" name-en="" name-ru="">
+			<item addr="278:2" auto-period="600" cfgid="77" hw="min=30 max=100 func='led'" name="Кухня" type="dimer-lamp">
+				<linked addr="518:48"/>
+			</item>
+			<item addr="798:6" auto-period="600" cfgid="17" image="lamp" name="Рабочая зона 1" type="lamp">
+				<linked addr="565:11"/>
+			</item>
+			<item addr="798:7" auto-period="600" cfgid="17" name="Рабочая зона 2" type="lamp">
+				<linked addr="565:9"/>
+			</item>
+			<item addr="482:4" auto-period="600" cfgid="77" hw="min=30 max=100 func='led'" name="Точки 1" type="dimer-lamp"/>
+			<item addr="278:3" auto-period="600" cfgid="77" hw="min=30 max=100 func='led'" name="Точки 2" type="dimer-lamp"/>
+			<item addr="495:2" auto-period="600" cfgid="77" hw="min=30 max=100 func='led'" name="Точки 3\10Столовая" type="dimer-lamp"/>
+			<item addr="278:250" name="Кухня Точки Вкл. " system="yes" type="light-scheme">
+				<contains addr="482:4" state="0x01FA"/>
+				<contains addr="278:3" state="0x01FA"/>
+				<linked addr="534:69"/>
+				<linked addr="518:61"/>
+				<linked addr="518:67"/>
+			</item>
+			<item addr="577:56" cfgid="6" name="Движение" type="motion-sensor"/>
+			<item addr="495:250" name="тс" system="yes" type="light-scheme">
+				<contains addr="495:2" state="0x01FA"/>
+				<linked addr="518:60"/>
+				<linked addr="534:65"/>
+			</item>
+			<item addr="278:246" name="кухня люст" system="yes" type="light-scheme">
+				<contains addr="278:2" state="0x01FA"/>
+				<linked addr="518:64"/>
+			</item>
+			<item addr="278:245" name="кух стол роб" system="yes" type="light-scheme">
+				<contains addr="278:2" state="0x01FA"/>
+				<linked addr="518:66"/>
+			</item>
+			<item addr="495:249" name="точк стол" system="yes" type="light-scheme">
+				<contains addr="495:2" state="0x01FA"/>
+				<linked addr="518:50"/>
+			</item>
+		</area>
+		<area name="Зал" name-en="" name-ru="">
+			<item addr="374:1" auto-period="600" cfgid="77" hw="min=30 max=100 func='led'" name="Зал" type="dimer-lamp"/>
+			<item addr="578:33" auto-period="600" cfgid="2" name="Треки гостиная питание" system="yes" type="lamp"/>
+			<item addr="568:27" auto-period="600" cfgid="24" hw="min=30 max=100 func='led'" name="Треки 1" name-ru="Треки 1" type="dimer-lamp"/>
+			<item addr="568:26" auto-period="600" cfgid="24" hw="min=30 max=100 func='led'" name="Треки 2" name-ru="Треки 2" type="dimer-lamp"/>
+			<item addr="568:25" auto-period="600" cfgid="24" hw="min=30 max=100 func='led'" name="Треки 3" name-ru="Треки 3" type="dimer-lamp"/>
+			<item addr="568:24" auto-period="600" cfgid="24" hw="min=30 max=100 func='led'" name="Треки 4" name-ru="Треки 4" type="dimer-lamp"/>
+			<item addr="358:2" auto-period="600" cfgid="77" hw="min=30 max=100 func='led'" name="Коридор" type="dimer-lamp"/>
+			<item addr="568:250" name="Трек гос вкл" system="yes" type="light-scheme">
+				<contains addr="568:24" state="0x01FA"/>
+				<contains addr="568:25" state="0x01FA"/>
+				<contains addr="568:26" state="0x01FA"/>
+				<contains addr="568:27" state="0x01FA"/>
+				<contains addr="578:33" state="0x01"/>
+				<linked addr="518:58"/>
+				<linked addr="518:65"/>
+				<linked addr="534:66"/>
+			</item>
+			<item-ref addr="761:8" name="Гостиная" name-en="" name-ru="Гостиная"/>
+			<item-ref addr="513:56" name="Гостиная" name-en="" name-ru="Гостиная"/>
+			<item addr="513:48" cfgid="6" name="Влажность" type="humidity-sensor"/>
+			<item addr="564:16" cfgid="6" name="Движение" name-ru="Движение" type="motion-sensor"/>
+			<item-ref addr="775:4" name="Окно 1 Гос." name-en="" name-ru="Окно 1 Гос."/>
+			<item-ref addr="540:48" name="Окно 1 Гос." name-en="" name-ru="Окно 1 Гос."/>
+			<item-ref addr="775:8" name="Окно 2 Гос." name-en="" name-ru="Окно 2 Гос."/>
+			<item-ref addr="510:16" name="Окно 2 Гос." name-en="" name-ru="Окно 2 Гос."/>
+			<item-ref addr="798:3" name="Окно 3 Гос." name-en="" name-ru="Окно 3 Гос."/>
+			<item-ref addr="510:32" name="Окно 3 Гос." name-en="" name-ru="Окно 3 Гос."/>
+			<item addr="358:249" name="гос" system="yes" type="light-scheme">
+				<contains addr="358:2" state="0x01FA"/>
+				<linked addr="565:10"/>
+				<linked addr="518:57"/>
+			</item>
+			<item addr="374:250" name="зал" system="yes" type="light-scheme">
+				<contains addr="374:1" state="0x01FA"/>
+				<linked addr="518:59"/>
+			</item>
+			<item addr="358:246" name="кор гос" system="yes" type="light-scheme">
+				<contains addr="358:2" state="0x01FA"/>
+				<linked addr="518:68"/>
+			</item>
+			<item addr="374:249" name="люст стол" system="yes" type="light-scheme">
+				<contains addr="374:1" state="0x01FA"/>
+				<linked addr="534:64"/>
+			</item>
+			<item addr="358:245" name="кор гос" system="yes" type="light-scheme">
+				<contains addr="358:2" state="0x01FA"/>
+				<linked addr="534:67"/>
+				<linked addr="534:58"/>
+			</item>
+			<item addr="374:248" name="люст стол" system="yes" type="light-scheme">
+				<contains addr="374:1" state="0x01FA"/>
+				<linked addr="518:49"/>
+			</item>
+		</area>
+		<area name="Прихожая" name-en="" name-ru="">
+			<item addr="482:1" auto-period="600" cfgid="77" hw="min=30 max=100 func='led'" name="Прихожая" type="dimer-lamp">
+				<automation enabled="yes" illumination-level="10" motion-level="30" motion-sensors="564:48" time-interval="3" time-interval2="1" type="on-by-moving"/>
+				<automation enabled="yes" motion-level="15" motion-sensors="564:48" time-interval="300" type="off-by-moving"/>
+			</item>
+			<item addr="564:48" cfgid="6" name="Движение" type="motion-sensor"/>
+			<item addr="482:250" name="прих" system="yes" type="light-scheme">
+				<contains addr="482:1" state="0x01FA"/>
+				<linked addr="543:49"/>
+				<linked addr="518:56"/>
+				<linked addr="534:57"/>
+			</item>
+			<item addr="482:247" name="прих" system="yes" type="light-scheme">
+				<contains addr="482:1" state="0x01FA"/>
+				<linked addr="518:69"/>
+			</item>
+			<item addr="482:246" name="прих" system="yes" type="light-scheme">
+				<contains addr="482:1" state="0x01FA"/>
+				<linked addr="534:68"/>
+			</item>
+		</area>
+		<item DELTA="1" TIME01="3" U00="278:2" U01="798:6" U02="798:7" U03="482:4" U04="278:3" U05="495:2" U06="374:1" U07="568:27" U08="568:26" U09="568:25" U10="568:24" U11="482:1" addr="565:250" image="closing-switch" name="Выключить всё" path="scripts/3-universal.txt" type="script"/>
+	</area>
+	<area name="Спальня 1" name-en="" name-ru="Спальня 1">
+		<item addr="203:30" cfgid="14" name="Спальня" name-ru="Спальня" type="speaker"/>
+		<item addr="374:2" auto-period="600" cfgid="77" hw="min=50 max=100 func='led'" name="Точки" name-ru="Точки" type="dimer-lamp">
+			<linked addr="510:12"/>
+			<linked addr="540:9"/>
+		</item>
+		<item addr="435:3" auto-period="600" cfgid="77" hw="min=50 max=100 func='led'" name="Прикроватные" name-ru="Прикроватные" type="dimer-lamp">
+			<linked addr="577:18"/>
+			<linked addr="540:8"/>
+		</item>
+		<item-ref addr="510:40" name="Конвектор С." name-en="" name-ru="Конвектор С."/>
+		<item addr="565:24" cfgid="6" name="Влажность" name-ru="Влажность " type="humidity-sensor"/>
+		<item addr="568:56" cfgid="6" name="Движение" name-ru="Движение" type="motion-sensor"/>
+		<item addr="358:3" auto-period="600" cfgid="77" hw="min=30 max=100 func='led'" name="Коридор 2" name-ru="Коридор 2" type="dimer-lamp"/>
+		<item addr="764:5" auto-period="600" cfgid="17" name="Коридор  хоз подсветка" name-ru="Коридор 2&#10;подсветка пол" type="lamp">
+			<automation enabled="yes" illumination-level="10" motion-level="30" motion-sensors="543:56" time-interval="3" time-interval2="1" time-intervals="FFFFC00003FFFFFFC00003FFFFFFC00003FFFFFFC00003FFFFFFC00003FFFFFFC00003FFFFFFC00003FF" type="on-by-moving">
+				<time-interval end-time="09:00" start-time="19:00" week-days="mo;tu;we;th;fr;sa;su"/>
+			</automation>
+			<automation enabled="yes" motion-level="15" motion-sensors="543:56" time-interval="300" type="off-by-moving"/>
+		</item>
+		<item addr="543:56" cfgid="6" name="Движение\10Коридор" name-ru="Движение\10Коридор" type="motion-sensor"/>
+		<item addr="564:56" cfgid="6" name="Движение\10Гардероб 1" name-ru="Движение\10Гардероб 1" type="motion-sensor"/>
+		<item-ref addr="798:2" name="Окно С." name-en="" name-ru="Окно С."/>
+		<item-ref addr="502:16" name="Окно С." name-en="" name-ru="Окно С."/>
+		<item-ref addr="761:4" name="Конвектор С." name-en="" name-ru="Конвектор С."/>
+		<item addr="534:16" cfgid="10" hw="T 10" name="Шторы" name-ru="Шторы" sub-type="120" type="jalousie">
+			<linked addr="510:10"/>
+		</item>
+		<item addr="513:24" cfgid="10" hw="T 27" name="Рулонная\10Штора" name-ru="Рулонная\10Штора" sub-type="120" type="jalousie"/>
+		<item ITEM101="374:2" ITEM102="435:3" addr="568:245" name="5" name-ru="5" path="scripts/1-scr-barin-spal.txt" system="yes" type="script">
+			<linked addr="577:17"/>
+		</item>
+		<item addr="358:250" name="кор дет" system="yes" type="light-scheme">
+			<contains addr="358:3" state="0x01FA"/>
+			<linked addr="510:9"/>
+		</item>
+		<item ITEM101="798:8" ITEM102="798:5" ITEM103="764:3" ITEM104="776:3" ITEM105="764:6" ITEM106="764:7" ITEM107="764:5" ITEM108="764:2" addr="543:250" name="кор" name-ru="кор" path="scripts/1-kor-cpal-1.txt" system="yes" type="script">
+			<linked addr="540:10"/>
+			<linked addr="512:12"/>
+		</item>
+		<item ITEM101="495:4" ITEM102="358:4" addr="564:250" name="kor-3" name-ru="kor-3" path="scripts/1-3-kor.txt" system="yes" type="script">
+			<linked addr="564:10"/>
+		</item>
+		<item DELTA="1" TIME01="3" U00="374:2" U01="435:3" U02="358:3" U03="764:5" addr="565:249" image="closing-switch" name="Выключить все" path="scripts/3-universal.txt" type="script"/>
+	</area>
+	<area name="Спальня 2" name-en="" name-ru="Спальня 2">
+		<item addr="435:2" auto-period="600" cfgid="77" hw="min=50 max=100 func='led'" name="Детская 1" name-ru="Люстра" type="dimer-lamp"/>
+		<item addr="764:1" auto-period="600" cfgid="17" name="Детская 1 подсветка" name-ru="Подсветка" type="lamp">
+			<linked addr="565:8"/>
+		</item>
+		<item addr="578:16" cfgid="6" name="Влажность детская 1" name-ru="Влажность " type="humidity-sensor"/>
+		<item-ref addr="495:4" hw="min=30 max=100 func='led'" name="Гардероб 1" name-en="" name-ru="Гардероб 1"/>
+		<item-ref addr="358:3" hw="min=30 max=100 func='led'" name="Коридор 2" name-en="" name-ru="Коридор 2"/>
+		<item-ref addr="764:5" name="Коридор 2&#10;подсветка пол" name-en="" name-ru=""/>
+		<item addr="534:24" cfgid="10" hw="T 10" name="Детская 1" name-ru="Шторы" sub-type="120" type="jalousie"/>
+		<item addr="518:32" cfgid="10" hw="T 27" name="Рулонная штора" name-ru="Рулонная штора" sub-type="120" type="jalousie"/>
+		<item-ref addr="761:1" name="Конвектор  Д.1" name-en="" name-ru="Конвектор  Д.1"/>
+		<item-ref addr="540:56" name="Конвектор  Д.1" name-en="" name-ru="Конвектор  Д.1"/>
+		<item-ref addr="775:6" name="Окно Д.1" name-en="" name-ru="Окно Д.1"/>
+		<item-ref addr="510:48" name="Окно Д.1" name-en="" name-ru="Окно Д.1"/>
+		<item addr="564:32" cfgid="6" name="Дв Детская 1" name-ru="Движение" type="motion-sensor"/>
+		<item addr="215:30" cfgid="14" name="Детская 1" name-ru="Детская 1" type="speaker"/>
+		<item DELTA="1" TIME01="3" U00="435:2" U01="764:1" addr="565:248" name="Выкл.Всё.С2" path="scripts/3-universal.txt" type="script"/>
+		<item addr="435:250" name="свет спал" system="yes" type="light-scheme">
+			<contains addr="435:2" state="0x01FA"/>
+			<linked addr="577:20"/>
+		</item>
+	</area>
+	<area name="Спальня 3" name-en="" name-ru="Спальня 3">
+		<item addr="233:30" cfgid="14" name="Детская 2" name-ru="Детская 2" type="speaker"/>
+		<item addr="435:4" auto-period="600" cfgid="77" hw="min=50 max=100 func='led'" name="Точки детская 2" name-ru="Точки" type="dimer-lamp"/>
+		<item addr="358:1" auto-period="600" cfgid="77" hw="min=40 max=100 func='led'" name="Детская 2 прикроватные" name-ru="Прикроватные" type="dimer-lamp"/>
+		<item addr="578:8" cfgid="6" name="Влажность детская 2" name-ru="Влажность " type="humidity-sensor"/>
+		<item addr="278:4" auto-period="600" cfgid="77" name="Коридор детская 1-2" name-ru="Коридор  1" type="dimer-lamp"/>
+		<item-ref addr="798:8" name="Коридор 1 &#10;подсветка пол" name-en="" name-ru="Коридор 1 &#10;подсветка пол"/>
+		<item addr="518:16" cfgid="10" hw="T 10" name="Шторы" name-ru="Шторы" sub-type="120" type="jalousie"/>
+		<item addr="518:8" cfgid="10" hw="T 27" name="Рулонная штора" name-ru="Рулонная штора" sub-type="120" type="jalousie"/>
+		<item-ref addr="761:6" name="Конвектор Д.2" name-en="" name-ru="Конвектор Д.2"/>
+		<item-ref addr="565:16" name="Конвектор Д.2" name-en="" name-ru="Конвектор Д.2"/>
+		<item-ref addr="761:5" name="Окно Д.2" name-en="" name-ru="Окно Д.2"/>
+		<item-ref addr="565:48" name="Окно Д.2" name-en="" name-ru="Окно Д.2"/>
+		<item addr="564:24" cfgid="6" name="Движение" type="motion-sensor"/>
+		<item addr="564:40" cfgid="6" name="Дв Гардероб \10Детские" name-ru="Дв. Гардероб " type="motion-sensor"/>
+		<item-ref addr="543:16" name="Дв. С/У" name-en="" name-ru="Дв. С/У"/>
+		<item-ref addr="543:32" name="Дв. Коридор 1" name-en="" name-ru="Дв. Коридор 1"/>
+		<item DELTA="1" TIME01="3" U00="435:4" U01="358:1" U02="278:4" addr="565:247" name="Выкл.Всё.С3" path="scripts/3-universal.txt" type="script"/>
+		<item addr="435:249" name="спал2" system="yes" type="light-scheme">
+			<contains addr="435:4" state="0x01FA"/>
+			<linked addr="518:53"/>
+		</item>
+		<item addr="358:248" name="прик 2" system="yes" type="light-scheme">
+			<contains addr="358:1" state="0x01FA"/>
+			<linked addr="518:51"/>
+		</item>
+		<item addr="435:248" name="спал3" system="yes" type="light-scheme">
+			<contains addr="435:4" state="0x01FA"/>
+			<linked addr="502:8"/>
+		</item>
+		<item addr="358:247" name="подкравать свет 3 " system="yes" type="light-scheme">
+			<contains addr="358:1" state="0x01FA"/>
+			<linked addr="502:11"/>
+		</item>
+		<item ITEM101="435:4" ITEM102="358:1" addr="534:250" name="5" path="scripts/1-scr-barin-spal.txt" system="yes" type="script">
+			<linked addr="512:11"/>
+		</item>
+		<item addr="278:248" name="кор детск" system="yes" type="light-scheme">
+			<contains addr="278:4" state="0x01FA"/>
+			<linked addr="512:8"/>
+		</item>
+	</area>
+	<area name="Спальня 4" name-en="" name-ru="Спальня 4">
+		<item addr="235:30" cfgid="14" name="Детская 3" name-ru="Детская 3" type="speaker"/>
+		<item addr="495:1" auto-period="600" cfgid="77" hw="min=30 max=100 func='led'" name="Точки детская 3" name-ru="Точки " type="dimer-lamp">
+			<linked addr="543:51"/>
+		</item>
+		<item addr="578:32" auto-period="600" cfgid="2" name="Детская 3 подсветка" name-ru="Подсветка" type="lamp">
+			<linked addr="543:48"/>
+		</item>
+		<item addr="565:32" cfgid="6" name="Влажность детская 3" name-ru="Влажность " type="humidity-sensor"/>
+		<item-ref addr="278:4" hw="min=30 max=100 func='led'" name="Коридор 1" name-en="" name-ru="Коридор 1"/>
+		<item addr="798:8" auto-period="600" cfgid="17" name="Подсветка кор детск" name-ru="Коридор 1&#10;подсветка пол" type="lamp"/>
+		<item-ref addr="435:1" hw="min=30 max=100 func='led'" name="Гардероб 2" name-en="" name-ru="Гардероб 2"/>
+		<item addr="513:8" cfgid="10" hw="T 10" name="Шторы" name-ru="Шторы" sub-type="120" type="jalousie"/>
+		<item addr="513:32" cfgid="10" hw="T 27" name="Рулонная штора" name-ru="Рулонная штора" sub-type="120" type="jalousie"/>
+		<item-ref addr="761:7" name="Конвектор Д.3" name-en="" name-ru="Конвектор Д.3"/>
+		<item-ref addr="512:56" name="Конвектор Д.3" name-en="" name-ru="Конвектор Д.3"/>
+		<item-ref addr="798:1" name="Окно Д.3" name-en="" name-ru="Окно Д.3"/>
+		<item-ref addr="512:24" name="Окно Д.3" name-en="" name-ru="Окно Д.3"/>
+		<item addr="543:24" cfgid="6" name="Дв Детская 3" name-ru="Движение" type="motion-sensor"/>
+		<item-ref addr="564:40" name="Дв. Гардероб" name-en="" name-ru="Дв. Гардероб"/>
+		<item addr="543:32" cfgid="6" name="Дв Коридор Детские" name-ru="Дв. Коридор 1" type="motion-sensor"/>
+		<item DELTA="1" TIME01="3" U00="495:1" U01="578:32" U02="798:8" addr="565:246" name="Выкл.Всё.С4" path="scripts/3-universal.txt" type="script"/>
+		<item addr="278:247" name="гвар детск" system="yes" type="light-scheme">
+			<contains addr="435:1" state="0x01FA"/>
+			<linked addr="502:9"/>
+		</item>
+	</area>
+	<area name="System" system="yes">
+		<area name="Шторы" name-en="" name-ru="">
+			<import-script B00="512:10" D00="513:8" id="577" name="Штора 111" path="scripts/3-1ButtonShades.txt"/>
+			<import-script B00="577:19" D00="534:24" id="577" name="Штора 108" path="scripts/3-1ButtonShades.txt"/>
+			<import-script B00="564:9" D00="518:32" id="577" name="Рулонка 108" path="scripts/3-1ButtonShades.txt"/>
+			<import-script B00="510:11" D00="513:24" id="577" name="Рулонка 109" path="scripts/3-1ButtonShades.txt"/>
+			<import-script B00="540:11" D00="513:24" id="577" name="Рулонка 109-2" path="scripts/3-1ButtonShades.txt"/>
+			<import-script B00="540:12" D00="534:16" id="577" name="Штора 109" path="scripts/3-1ButtonShades.txt"/>
+			<import-script B00="510:11" D00="534:16" id="577" name="Шторы 109-2" path="scripts/3-1ButtonShades.txt"/>
+			<import-script B00="534:59" D00="518:8" id="577" name="Рулонка 110" path="scripts/3-1ButtonShades.txt"/>
+			<import-script B00="502:12" D00="518:8" id="577" name="Рулонка 110-2" path="scripts/3-1ButtonShades.txt"/>
+			<import-script B00="518:52" D00="518:16" id="577" name="Шторы 110" path="scripts/3-1ButtonShades.txt"/>
+			<import-script B00="510:10" D00="518:16" id="577" name="Шторы 110-2" path="scripts/3-1ButtonShades.txt"/>
+			<import-script B00="512:9" D00="513:32" id="577" name="Рулонка 111" path="scripts/3-1ButtonShades.txt"/>
+		</area>
+		<area default="true" name="Скрипты" name-en="" name-ru="">
+			<!-- <import-script Address="2" RS485="507:20" id="507" name="testrs" path="scripts/3-RSCheck.txt"/> -->
+			<item DELTA="1" TIME01="3" U00="764:5" U01="764:1" U02="798:8" U03="764:7" U04="764:3" U05="776:5" U06="764:2" U07="798:5" U08="764:6" U09="776:3" addr="568:249" name="Утро" path="scripts/3-universal.txt" type="script"/>
+			<item DELTA="1" L00="565:250" L01="565:249" L02="565:248" L03="565:247" L04="565:246" L08="565:245" L09="565:244" L10="565:243" L11="565:242" TIME01="3" U00="495:4" U01="435:1" U02="482:2" U03="374:3" U04="764:6" U05="776:3" addr="568:248" name="ВЫКЛ.ВСЁ" path="scripts/3-universal.txt" type="script">
+				<linked addr="534:56"/>
+			</item>
+			<item DELTA="1" L00="568:248" L01="764:5" L02="764:1" L03="798:8" L04="764:7" L05="764:3" L06="776:5" L07="764:2" L08="798:5" L09="764:6" L10="776:3" TIME01="3" U00="203:30" U01="215:30" U02="233:30" U03="235:30" U04="211:30" U05="209:30" U06="201:30" addr="568:247" name="Ночь" path="scripts/3-universal.txt" type="script"/>
+			<item DELTA="1" L00="568:248" TIME01="3" U00="203:30" U01="215:30" U02="233:30" U03="235:30" U04="211:30" U05="209:30" U06="201:30" addr="568:246" name="Никого дома" path="scripts/3-universal.txt" type="script"/>
+		</area>
+		<area name="мульт">
+			<item addr="201:31" cfgid="14" name="Микрофон201" type="mic"/>
+			<item addr="201:32" cfgid="14" name="Микрофон201" type="mic"/>
+			<item addr="201:33" cfgid="14" name="SPDIF" type="mic"/>
+			<item addr="201:98" cfgid="14" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="203:31" cfgid="14" name="Микрофон203" type="mic"/>
+			<item addr="203:32" cfgid="14" name="Микрофон203" type="mic"/>
+			<item addr="203:33" cfgid="14" name="SPDIF" type="mic"/>
+			<item addr="203:98" cfgid="14" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="233:31" cfgid="14" name="Микрофон233" type="mic"/>
+			<item addr="233:32" cfgid="14" name="Микрофон233" type="mic"/>
+			<item addr="233:33" cfgid="14" name="SPDIF" type="mic"/>
+			<item addr="233:98" cfgid="14" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="235:31" cfgid="14" name="Микрофон235" type="mic"/>
+			<item addr="235:32" cfgid="14" name="Микрофон235" type="mic"/>
+			<item addr="235:33" cfgid="14" name="SPDIF" type="mic"/>
+			<item addr="235:98" cfgid="14" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="209:31" cfgid="14" name="Микрофон209" type="mic"/>
+			<item addr="209:32" cfgid="14" name="Микрофон209" type="mic"/>
+			<item addr="209:33" cfgid="14" name="SPDIF" type="mic"/>
+			<item addr="209:98" cfgid="14" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="215:31" cfgid="14" name="Микрофон215" type="mic"/>
+			<item addr="215:32" cfgid="14" name="Микрофон215" type="mic"/>
+			<item addr="215:33" cfgid="14" name="SPDIF" type="mic"/>
+			<item addr="215:98" cfgid="14" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="211:31" cfgid="14" name="Микрофон211" type="mic"/>
+			<item addr="211:32" cfgid="14" name="Микрофон211" type="mic"/>
+			<item addr="211:33" cfgid="14" name="SPDIF" type="mic"/>
+		</area>
+		<area name="system" name-en="" name-ru="">
+			<item addr="507:20" cfgid="13" name="RS485" type="com-port"/>
+			<item addr="507:98" cfgid="13" hw="modbus, br 9600, EP" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="565:31" cfgid="6" name="Напряжение" system="yes" type="voltage-sensor"/>
+			<item addr="565:39" cfgid="6" name="Напряжение" system="yes" type="voltage-sensor"/>
+			<item addr="510:31" cfgid="6" name="Напряжение" system="yes" type="voltage-sensor"/>
+			<item addr="518:15" cfgid="10" hw="B" name="Напряжение 1" system="yes" type="voltage-sensor"/>
+			<item addr="518:23" cfgid="10" hw="B" name="Напряжение 2" system="yes" type="voltage-sensor"/>
+			<item addr="518:31" cfgid="10" hw="B" name="Напряжение 3" system="yes" type="voltage-sensor"/>
+			<item addr="518:39" cfgid="10" hw="B" name="Напряжение 4" system="yes" type="voltage-sensor"/>
+			<item addr="518:47" cfgid="10" hw="B" name="Напряжение 5" system="yes" type="voltage-sensor"/>
+			<item addr="142:21" cfgid="15" name="ИК приемник" type="ir-receiver"/>
+			<item addr="534:15" cfgid="10" hw="V" name="Напряжение 1" system="yes" type="voltage-sensor"/>
+			<item addr="534:23" cfgid="10" hw="B" name="Напряжение 2" system="yes" type="voltage-sensor"/>
+			<item addr="534:31" cfgid="10" hw="B" name="Напряжение 3" system="yes" type="voltage-sensor"/>
+			<item addr="534:39" cfgid="10" name="Напряжение 4" system="yes" type="voltage-sensor"/>
+			<item addr="534:47" cfgid="10" name="Напряжение 5" system="yes" type="voltage-sensor"/>
+			<item addr="374:97" cfgid="77" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="374:98" cfgid="77" name="Температура" sn="216430337" system="yes" type="temperature-sensor"/>
+			<item addr="278:97" cfgid="77" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="278:98" cfgid="77" name="Температура" sn="3684861331" system="yes" type="temperature-sensor"/>
+			<item addr="435:97" cfgid="77" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="435:98" cfgid="77" name="Температура" sn="132338401" system="yes" type="temperature-sensor"/>
+			<item addr="482:97" cfgid="77" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="482:98" cfgid="77" name="Температура" sn="3236262801" system="yes" type="temperature-sensor"/>
+			<item addr="495:97" cfgid="77" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="495:98" cfgid="77" name="Температура" sn="2404468139" system="yes" type="temperature-sensor"/>
+			<item addr="502:98" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="512:98" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="540:30" cfgid="9" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="540:38" cfgid="9" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="540:98" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="565:98" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="798:97" cfgid="17" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="798:98" cfgid="17" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="518:98" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="510:98" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="543:98" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="142:98" cfgid="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="534:98" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="764:97" cfgid="17" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="764:98" cfgid="17" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="518:22" cfgid="10" name="Температура 2" system="yes" type="temperature-sensor"/>
+			<item addr="534:22" cfgid="10" name="Температура 2" system="yes" type="temperature-sensor"/>
+			<item addr="518:30" cfgid="10" name="Температура 3" system="yes" type="temperature-sensor"/>
+			<item addr="534:30" cfgid="10" name="Температура 3" system="yes" type="temperature-sensor"/>
+			<item addr="518:38" cfgid="10" name="Температура 4" system="yes" type="temperature-sensor"/>
+			<item addr="534:38" cfgid="10" name="Температура 4" system="yes" type="temperature-sensor"/>
+			<item addr="518:46" cfgid="10" name="Температура 5" system="yes" type="temperature-sensor"/>
+			<item addr="534:46" cfgid="10" name="Температура 5" system="yes" type="temperature-sensor"/>
+			<item addr="518:14" cfgid="10" name="Температура 1" system="yes" type="temperature-sensor"/>
+			<item addr="534:14" cfgid="10" name="Температура 1" system="yes" type="temperature-sensor"/>
+			<item addr="761:97" cfgid="17" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="761:98" cfgid="17" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="775:97" cfgid="17" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="775:98" cfgid="17" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="776:98" cfgid="17" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="776:97" cfgid="17" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="775:5" auto-period="600" cfgid="17" hw="relay-only" name="#" system="yes" type="lamp"/>
+			<item addr="495:3" auto-period="600" cfgid="77" name="@ПУСТОЙ" system="yes" type="dimer-lamp"/>
+			<item addr="211:98" cfgid="14" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="577:98" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="564:98" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="540:8" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="540:9" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="540:10" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="540:11" cfgid="5" name="Выключатель 4" type="switch"/>
+			<item addr="540:12" cfgid="5" name="Выключатель 5" type="switch"/>
+			<item addr="540:13" cfgid="5" name="Выключатель 6" type="switch"/>
+			<item addr="540:15" cfgid="5" hw="BBBBBB" name="Напряжение" system="yes" type="voltage-sensor"/>
+			<item addr="565:8" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="565:9" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="565:10" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="565:11" cfgid="5" name="Выключатель 4" type="switch"/>
+			<item addr="565:12" cfgid="5" name="Выключатель 5" type="switch"/>
+			<item addr="565:13" cfgid="5" name="Выключатель 6" type="switch"/>
+			<item addr="565:15" cfgid="5" hw="BBBBBB" name="Напряжение" system="yes" type="voltage-sensor"/>
+			<item addr="512:8" cfgid="5" name="Выключатель 1" type="switch"/>
+			<item addr="512:9" cfgid="5" name="Выключатель 2" type="switch"/>
+			<item addr="512:10" cfgid="5" name="Выключатель 3" type="switch"/>
+			<item addr="512:11" cfgid="5" name="Выключатель 4" type="switch"/>
+			<item addr="512:12" cfgid="5" name="Выключатель 5" type="switch"/>
+			<item addr="512:13" cfgid="5" name="Выключатель 6" type="switch"/>
+			<item addr="512:15" cfgid="5" hw="BBBBBB" name="Напряжение" system="yes" type="voltage-sensor"/>
+			<item addr="512:16" cfgid="5" name="Выключатель 4" type="switch"/>
+			<item addr="512:17" cfgid="5" name="Выключатель 5" type="switch"/>
+			<item addr="512:18" cfgid="5" name="Выключатель 6" type="switch"/>
+			<item addr="512:19" cfgid="5" name="Выключатель 10" type="switch"/>
+			<item addr="512:20" cfgid="5" name="Выключатель 11" type="switch"/>
+			<item addr="512:21" cfgid="5" name="Выключатель 12" type="switch"/>
+			<item addr="512:23" cfgid="5" hw="BBBBBB" name="Напряжение" system="yes" type="voltage-sensor"/>
+			<item addr="518:48" cfgid="5" name="Выключатель 1" type="switch"/>
+			<item addr="518:49" cfgid="5" name="Выключатель 2" type="switch"/>
+			<item addr="518:50" cfgid="5" name="Выключатель 3" type="switch"/>
+			<item addr="518:51" cfgid="5" name="Выключатель 4" type="switch"/>
+			<item addr="518:52" cfgid="5" name="Выключатель 5" type="switch"/>
+			<item addr="518:53" cfgid="5" name="Выключатель 6" type="switch"/>
+			<item addr="518:55" cfgid="5" hw="BBBBBB" name="Напряжение 6" system="yes" type="voltage-sensor"/>
+			<item addr="518:56" cfgid="5" name="Выключатель 4" type="switch"/>
+			<item addr="518:57" cfgid="5" name="Выключатель 5" type="switch"/>
+			<item addr="518:58" cfgid="5" name="Выключатель 6" type="switch"/>
+			<item addr="518:59" cfgid="5" name="Выключатель 10" type="switch"/>
+			<item addr="518:60" cfgid="5" name="Выключатель 11" type="switch"/>
+			<item addr="518:61" cfgid="5" name="Выключатель 12" type="switch"/>
+			<item addr="518:63" cfgid="5" hw="BBBBBB" name="Напряжение 7" system="yes" type="voltage-sensor"/>
+			<item addr="518:64" cfgid="5" name="Выключатель 7" type="switch"/>
+			<item addr="518:65" cfgid="5" name="Выключатель 8" type="switch"/>
+			<item addr="518:66" cfgid="5" name="Выключатель 9" type="switch"/>
+			<item addr="518:67" cfgid="5" name="Выключатель 16" type="switch"/>
+			<item addr="518:68" cfgid="5" name="Выключатель 17" type="switch"/>
+			<item addr="518:69" cfgid="5" name="Выключатель 18" type="switch"/>
+			<item addr="518:71" cfgid="5" hw="BBBBBB" name="Напряжение 8" system="yes" type="voltage-sensor"/>
+			<item addr="534:56" cfgid="5" name="Выключатель 1" type="switch"/>
+			<item addr="534:57" cfgid="5" name="Выключатель 2" type="switch"/>
+			<item addr="534:58" cfgid="5" name="Выключатель 3" type="switch"/>
+			<item addr="534:59" cfgid="5" name="Выключатель 4" type="switch"/>
+			<item addr="534:60" cfgid="5" name="Выключатель 5" type="switch"/>
+			<item addr="534:61" cfgid="5" name="Выключатель 6" type="switch"/>
+			<item addr="534:63" cfgid="5" hw="BBBBBB" name="Напряжение 6" system="yes" type="voltage-sensor"/>
+			<item addr="534:64" cfgid="5" name="Выключатель 4" type="switch"/>
+			<item addr="534:65" cfgid="5" name="Выключатель 5" type="switch"/>
+			<item addr="534:66" cfgid="5" name="Выключатель 6" type="switch"/>
+			<item addr="534:67" cfgid="5" name="Выключатель 7" type="switch"/>
+			<item addr="534:68" cfgid="5" name="Выключатель 8" type="switch"/>
+			<item addr="534:69" cfgid="5" name="Выключатель 9" type="switch"/>
+			<item addr="534:71" cfgid="5" hw="BBBBBB" name="Напряжение 7" system="yes" type="voltage-sensor"/>
+			<item addr="502:8" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="502:9" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="502:10" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="502:11" cfgid="5" name="Выключатель 4" type="switch"/>
+			<item addr="502:12" cfgid="5" name="Выключатель 5" type="switch"/>
+			<item addr="502:13" cfgid="5" name="Выключатель 6" type="switch"/>
+			<item addr="502:15" cfgid="5" hw="BBBBBB" name="Напряжение" system="yes" type="voltage-sensor"/>
+			<item addr="510:8" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="510:9" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="510:10" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="510:11" cfgid="5" name="Выключатель 4" type="switch"/>
+			<item addr="510:12" cfgid="5" name="Выключатель 5" type="switch"/>
+			<item addr="510:13" cfgid="5" name="Выключатель 6" type="switch"/>
+			<item addr="510:15" cfgid="5" hw="BBBBBB" name="Напряжение" system="yes" type="voltage-sensor"/>
+			<item addr="564:8" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="564:9" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="564:10" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="564:11" cfgid="5" name="Выключатель 4" type="switch"/>
+			<item addr="564:12" cfgid="5" name="Выключатель 5" type="switch"/>
+			<item addr="564:13" cfgid="5" name="Выключатель 6" type="switch"/>
+			<item addr="564:15" cfgid="5" hw="BBBBBB" name="Напряжение 1" system="yes" type="voltage-sensor"/>
+			<item addr="543:8" cfgid="2" name="Выключатель" type="switch"/>
+			<item addr="543:9" cfgid="2" name="Выключатель" type="switch"/>
+			<item addr="543:10" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="543:11" cfgid="5" name="Выключатель 4" type="switch"/>
+			<item addr="543:12" cfgid="5" name="Выключатель 5" type="switch"/>
+			<item addr="543:13" cfgid="5" name="Выключатель 6" type="switch"/>
+			<item addr="543:15" cfgid="5" hw="BBBBBB" name="Напряжение 1" system="yes" type="voltage-sensor"/>
+			<item addr="577:8" cfgid="6" name="Выключатель" type="switch"/>
+			<item addr="577:9" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="577:10" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="577:11" cfgid="5" name="Выключатель 4" type="switch"/>
+			<item addr="577:12" cfgid="5" name="Выключатель 5" type="switch"/>
+			<item addr="577:13" cfgid="5" name="Выключатель 6" type="switch"/>
+			<item addr="577:15" cfgid="6" name="Напряжение 1" system="yes" type="voltage-sensor"/>
+			<item addr="532:98" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="543:55" cfgid="5" hw="BBBBBB" name="Напряжение 5" system="yes" type="voltage-sensor"/>
+			<item addr="578:38" cfgid="2" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="578:39" cfgid="2" name="Напряжение 4" system="yes" type="voltage-sensor"/>
+			<item addr="578:98" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="578:31" cfgid="11" name="Напряжение" system="yes" type="voltage-sensor"/>
+			<item addr="578:30" cfgid="11" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="578:29" auto-period="600" cfgid="11" name="iox" type="lamp"/>
+			<item addr="578:28" auto-period="600" cfgid="11" name="iox" type="lamp"/>
+			<item addr="578:27" auto-period="600" cfgid="11" name="iox" type="lamp"/>
+			<item addr="578:26" auto-period="600" cfgid="11" name="iox" type="lamp"/>
+			<item addr="578:25" auto-period="600" cfgid="11" name="iox" type="lamp"/>
+			<item addr="578:23" cfgid="6" name="Напряжение" system="yes" type="voltage-sensor"/>
+			<item addr="578:15" cfgid="6" name="Напряжение" system="yes" type="voltage-sensor"/>
+			<item addr="543:53" cfgid="5" name="Геркон" type="switch"/>
+			<item addr="543:52" cfgid="5" name="Геркон" type="switch"/>
+			<item addr="543:51" cfgid="5" name="Геркон" type="switch"/>
+			<item addr="543:50" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="543:49" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="543:48" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="358:98" cfgid="77" name="Температура" sn="1611028799" system="yes" type="temperature-sensor"/>
+			<item addr="358:97" cfgid="77" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="532:22" cfgid="9" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="532:14" cfgid="9" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="513:55" cfgid="6" name="Напряжение 6" system="yes" type="voltage-sensor"/>
+			<item addr="513:47" cfgid="10" hw="B" name="Напряжение 5" system="yes" type="voltage-sensor"/>
+			<item addr="513:46" cfgid="10" name="Температура 5" system="yes" type="temperature-sensor"/>
+			<item addr="513:39" cfgid="10" hw="B" name="Напряжение 4" system="yes" type="voltage-sensor"/>
+			<item addr="513:38" cfgid="10" name="Температура 4" system="yes" type="temperature-sensor"/>
+			<item addr="513:31" cfgid="10" hw="B" name="Напряжение 3" system="yes" type="voltage-sensor"/>
+			<item addr="513:30" cfgid="10" name="Температура 3" system="yes" type="temperature-sensor"/>
+			<item addr="513:23" cfgid="10" name="Напряжение 2" system="yes" type="voltage-sensor"/>
+			<item addr="513:22" cfgid="10" name="Температура 2" system="yes" type="temperature-sensor"/>
+			<item addr="513:15" cfgid="10" hw="B" name="Напряжение 1" system="yes" type="voltage-sensor"/>
+			<item addr="513:14" cfgid="10" name="Температура 1" system="yes" type="temperature-sensor"/>
+			<item addr="568:98" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+			<item addr="568:31" cfgid="24" name="Напряжение 4" system="yes" type="voltage-sensor"/>
+			<item addr="568:30" cfgid="24" name="Напряжение 3" system="yes" type="voltage-sensor"/>
+			<item addr="568:29" cfgid="24" name="Напряжение 2" system="yes" type="voltage-sensor"/>
+			<item addr="568:28" cfgid="24" name="Напряжение 1" system="yes" type="voltage-sensor"/>
+			<item addr="532:38" cfgid="9" name="Температура 5" system="yes" type="temperature-sensor"/>
+			<item addr="532:30" cfgid="9" name="Температура 4" system="yes" type="temperature-sensor"/>
+			<item addr="513:98" logic-ver="15" name="Температура" system="yes" type="temperature-sensor"/>
+		</area>
+		<area name="Домофон" name-en="" name-ru="Домофон">
+			<item addr="439:1" cfgid="32" name="switch" type="switch"/>
+			<item addr="439:2" cfgid="32" name="Освещение" type="illumination-sensor"/>
+			<item addr="439:3" cfgid="32" name="Освещение IR" type="illumination-sensor"/>
+			<item addr="439:5" cfgid="32" name="Card reader" type="security-card-reader"/>
+			<item addr="439:6" cfgid="32" name="IR" system="yes" type="lamp"/>
+			<item addr="439:8" cfgid="32" name="Замок" type="lamp"/>
+			<item addr="439:30" cfgid="32" name="Speaker 439" type="speaker"/>
+			<item addr="439:31" cfgid="32" name="Микрофон" type="mic"/>
+			<item addr="439:95" cfgid="32" hw="cpu-usage" name="CPU usage" system="yes" type="percent-sensor"/>
+			<item addr="439:96" cfgid="32" hw="cpu-load" name="CPU load" system="yes" type="float-sensor"/>
+			<item addr="439:98" cfgid="32" logic-ver="18" name="CPU" sn="1488806439" system="yes" type="temperature-sensor"/>
+			<item addr="439:240" cfgid="32" name="Камера" type="rtsp" url="http://dev:55556" video-uri="/:31?camera"/>
+			<item addr="439:250" cameras="439:240" cfgid="32" door="439:8" history="yes" name="Домофон" type="intercom">
+				<linked addr="439:1"/>
+			</item>
+		</area>
+		<area name="хз" name-en="" name-ru="">
+			<item addr="577:23" cfgid="5" hw="BBBBBB" name="Напряжение 2" system="yes" type="voltage-sensor"/>
+			<item addr="577:16" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="577:17" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="577:18" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="543:23" cfgid="6" name="Напряжение 2" system="yes" type="voltage-sensor"/>
+			<item addr="543:31" cfgid="6" name="Напряжение 3" system="yes" type="voltage-sensor"/>
+			<item addr="543:39" cfgid="6" name="Напряжение" system="yes" type="voltage-sensor"/>
+			<item addr="543:47" cfgid="6" name="Напряжение" system="yes" type="voltage-sensor"/>
+			<item addr="543:63" cfgid="6" name="Напряжение 5" system="yes" type="voltage-sensor"/>
+			<item addr="577:19" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="577:20" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="577:21" cfgid="5" name="Выключатель" type="switch"/>
+			<item addr="568:63" cfgid="6" name="Напряжение 5" system="yes" type="voltage-sensor"/>
+			<item addr="564:47" cfgid="6" name="Напряжение 4" system="yes" type="voltage-sensor"/>
+			<item addr="564:55" cfgid="6" name="Напряжение 6" system="yes" type="voltage-sensor"/>
+			<item addr="577:71" cfgid="6" name="Напряжение 7" system="yes" type="voltage-sensor"/>
+			<item addr="577:31" cfgid="6" name="Напряжение" system="yes" type="voltage-sensor"/>
+			<item addr="577:39" cfgid="7" name="Напряжение 4" system="yes" type="voltage-sensor"/>
+			<item addr="577:47" cfgid="6" name="Напряжение 5" system="yes" type="voltage-sensor"/>
+			<item addr="577:55" cfgid="6" name="Напряжение 6" system="yes" type="voltage-sensor"/>
+			<item addr="577:63" cfgid="6" name="Напряжение 7" system="yes" type="voltage-sensor"/>
+			<item addr="564:63" cfgid="6" name="Напряжение 7" system="yes" type="voltage-sensor"/>
+			<item addr="564:39" cfgid="6" name="Напряжение 4" system="yes" type="voltage-sensor"/>
+			<item addr="564:31" cfgid="6" name="Напряжение" system="yes" type="voltage-sensor"/>
+			<item addr="564:23" cfgid="6" name="Напряжение" system="yes" type="voltage-sensor"/>
+		</area>
+	</area>
+	<area name="Гардеробные" name-en="" name-ru="Гардеробные">
+		<area name="Гард. 1" name-en="" name-ru="">
+			<item addr="495:4" auto-period="600" cfgid="77" hw="min=30 max=100 func='led'" name="Гардероб 1" name-ru="Гардероб 1" type="dimer-lamp">
+				<automation illumination-level="10" motion-level="30" motion-sensors="564:56" time-interval="3" time-interval2="1" type="on-by-moving"/>
+				<automation motion-level="15" motion-sensors="564:56" time-interval="300" type="off-by-moving"/>
+			</item>
+			<item addr="577:24" cfgid="6" name="Дв Гардероб\10Вход" name-ru="Дв. Гардероб 3" type="motion-sensor"/>
+		</area>
+		<area name="Гард. 2" name-en="" name-ru="">
+			<item addr="435:1" auto-period="600" cfgid="77" hw="min=30 max=100 func='led'" name="Гардероб 2" type="dimer-lamp">
+				<automation enabled="yes" illumination-level="10" motion-level="30" motion-sensors="564:40" time-interval="3" time-interval2="1" type="on-by-moving"/>
+				<automation enabled="yes" motion-level="15" motion-sensors="564:40" time-interval="300" type="off-by-moving"/>
+			</item>
+		</area>
+		<area name="Гард. 3" name-en="" name-ru="">
+			<item addr="482:2" auto-period="600" cfgid="77" hw="min=30 max=100 func='led'" name="Гардероб 3" type="dimer-lamp">
+				<automation enabled="yes" illumination-level="10" motion-level="30" motion-sensors="577:24" time-interval="3" time-interval2="1" type="on-by-moving"/>
+				<automation enabled="yes" motion-level="15" motion-sensors="577:24" time-interval="300" type="off-by-moving"/>
+			</item>
+			<item addr="482:249" name="горд" system="yes" type="light-scheme">
+				<contains addr="482:2" state="0x01FA"/>
+				<linked addr="564:8"/>
+			</item>
+		</area>
+	</area>
+	<area name="Санузлы" name-en="" name-ru="">
+		<import-script L00="278:1" TIME00="180" V00="776:7" id="512" name="Вытяжка СУ" name-ru="Вытяжка СУ" path="scripts/1-vit-vit.txt"/>
+		<area name="WC 1" name-en="" name-ru="">
+			<item addr="482:3" auto-period="600" cfgid="77" hw="min=30 max=100 func='led'" name="ГСУ" type="dimer-lamp"/>
+			<item addr="764:4" auto-period="600" cfgid="17" name="ГСУ зеркало" type="lamp"/>
+			<item addr="764:7" auto-period="600" cfgid="17" name="Подсветка ГСУ" type="lamp"/>
+			<item addr="776:8" auto-period="600" cfgid="17" image="air-fan" name="Вентилятор СУ 103" name-ru="ГСУ " type="lamp"/>
+			<item-ref addr="775:3" name="ТП ГСУ" name-en="" name-ru="ТП ГСУ"/>
+			<item-ref addr="565:40" name="ТП ГСУ" name-en="" name-ru="ТП ГСУ"/>
+			<item addr="577:64" cfgid="6" name="Движение ГСУ" name-ru="Дв. ГСУ" type="motion-sensor"/>
+			<item DELTA="1" TIME01="3" U00="482:3" U01="764:4" U02="764:7" U03="776:8" addr="565:245" name="Выкл.Всё.WC1" path="scripts/3-universal.txt" type="script"/>
+			<item addr="482:248" name="гсу" system="yes" type="light-scheme">
+				<contains addr="482:3" state="0x01FA"/>
+				<linked addr="510:8"/>
+			</item>
+		</area>
+		<area name="WC 2" name-en="" name-ru="">
+			<item addr="278:1" auto-period="600" cfgid="77" hw="min=30 max=100 func='led'" name="Точки СУ" type="dimer-lamp"/>
+			<item addr="764:3" auto-period="600" cfgid="17" name="Подсветка СУ" type="lamp"/>
+			<item addr="761:3" auto-period="600" cfgid="17" name="Зеркало С/У" type="lamp">
+				<linked addr="564:12"/>
+			</item>
+			<item addr="776:7" auto-period="600" cfgid="17" image="air-fan" name="Вент 106+105" name-ru="С/У + постирочная" type="lamp"/>
+			<item-ref addr="761:2" name="ТП С/У" name-en="" name-ru="ТП С/У"/>
+			<item-ref addr="502:48" name="ТП С/У" name-en="" name-ru="ТП С/У"/>
+			<item addr="510:24" cfgid="6" name="Движение С/У" name-ru="Движение С/У" type="motion-sensor"/>
+			<item addr="211:30" cfgid="14" name="СУ" name-ru="СУ" type="speaker"/>
+			<item DELTA="1" TIME01="3" U00="278:1" U01="764:3" U02="761:3" U03="776:7" addr="565:244" name="Выкл.Всё WC2" path="scripts/3-universal.txt" type="script"/>
+			<item addr="278:249" name="сн" system="yes" type="light-scheme">
+				<contains addr="278:1" state="0x01FA"/>
+				<linked addr="577:16"/>
+			</item>
+		</area>
+		<area name="WC 3" name-en="" name-ru="">
+			<item addr="209:30" cfgid="14" name="СУ хозяйский" name-ru="СУ хозяйский" type="speaker"/>
+			<item addr="358:4" auto-period="600" cfgid="77" hw="min=30 max=100 func='led'" name="С/У хозяйский" name-ru="С/У Точки" type="dimer-lamp">
+				<automation illumination-level="10" motion-level="30" motion-sensors="543:40" time-interval="3" time-interval2="1" type="on-by-moving"/>
+				<automation motion-level="15" motion-sensors="543:40" time-interval="300" type="off-by-moving"/>
+				<linked addr="565:12"/>
+			</item>
+			<item addr="776:5" auto-period="600" cfgid="17" name="С/У хоз подсветка" name-ru="С/У Зеркало" type="lamp">
+				<linked addr="534:60"/>
+			</item>
+			<item addr="764:2" auto-period="600" cfgid="17" name="Подсветка" name-ru="Подсветка" type="lamp"/>
+			<item addr="776:2" auto-period="600" cfgid="17" image="air-fan" name="Вент 107 " name-ru="С/У" type="lamp"/>
+			<item addr="543:40" cfgid="6" name="Дв Хоз С/У" name-ru="Дв. С/У" type="motion-sensor"/>
+			<item-ref addr="775:7" name="ТП ХОЗ С/У" name-en="" name-ru="ТП ХОЗ С/У"/>
+			<item-ref addr="540:16" name="ТП ХОЗ С/У" name-en="" name-ru="ТП ХОЗ С/У"/>
+			<item DELTA="1" TIME01="3" U00="358:4" U01="776:5" U02="764:2" U03="776:2" addr="565:243" name="Выкл.Всё.WC 3" path="scripts/3-universal.txt" type="script"/>
+		</area>
+		<area name="WC 4" name-en="" name-ru="">
+			<item addr="374:4" auto-period="600" cfgid="77" hw="min=30 max=100 func='led'" name="С/У детский" name-ru="С/У Точки" type="dimer-lamp">
+				<automation enabled="yes" illumination-level="10" motion-level="30" motion-sensors="543:16" time-interval="3" time-interval2="1" type="on-by-moving"/>
+				<automation enabled="yes" motion-level="15" motion-sensors="543:24" time-interval="300" type="off-by-moving"/>
+				<linked addr="543:52"/>
+			</item>
+			<item addr="776:1" auto-period="600" cfgid="17" name="СУ детский зеркало" name-ru="С/У зеркало" type="lamp">
+				<linked addr="543:50"/>
+			</item>
+			<item addr="798:5" auto-period="600" cfgid="17" name="Детский СУ подсветка" name-ru="С/У подсветка" type="lamp"/>
+			<item addr="776:4" auto-period="600" cfgid="17" image="air-fan" name="Вент 114" name-ru="С/У" type="lamp"/>
+			<item addr="201:30" cfgid="14" name="СУ детский" name-ru="СУ детский" type="speaker"/>
+			<item addr="543:16" cfgid="6" name="Дв Детский С/У" name-ru="Дв. С/У" type="motion-sensor"/>
+			<item-ref addr="798:4" name="ТП С/У Детский" name-en="" name-ru="ТП С/У Детский"/>
+			<item-ref addr="502:64" name="ТП С/У Детский" name-en="" name-ru="ТП С/У Детский"/>
+			<item DELTA="1" TIME01="3" U00="374:4" U01="776:1" U02="798:5" U03="776:4" addr="565:242" name="Выкл.Всё.WC4" path="scripts/3-universal.txt" type="script"/>
+		</area>
+	</area>
+	<area name="Постирочная" name-en="" name-ru="Постирочная">
+		<item addr="374:3" auto-period="600" cfgid="77" hw="min=30 max=100 func='led'" name="Постирочная" type="dimer-lamp">
+			<linked addr="564:11"/>
+			<automation enabled="yes" illumination-level="10" motion-level="30" motion-sensors="577:32" time-interval="3" time-interval2="1" type="on-by-moving"/>
+			<automation enabled="yes" motion-level="15" motion-sensors="564:48;577:32" time-interval="300" type="off-by-moving"/>
+		</item>
+		<item addr="577:32" cfgid="7" name="Дв Постирочная" name-ru="Дв. Постирочная" type="motion-sensor"/>
+		<renderer-enabled udn="*"/>
+	</area>
+	<area name="Коридоры" name-en="" name-ru="">
+		<area name="Кор. 1" name-en="" name-ru="">
+			<item addr="764:6" auto-period="600" cfgid="17" name="Подсветка 1 коридор" type="lamp">
+				<automation enabled="yes" illumination-level="10" motion-level="30" motion-sensors="543:56;577:40;543:32;564:48;577:64;564:16;577:48" time-interval="3" time-intervals="FFFFC00003FFFFFFC00003FFFFFFC00003FFFFFFC00003FFFFFFC00003FFFFFFC00003FFFFFFC00003FF" type="on-by-moving">
+					<time-interval end-time="9:00" start-time="19:00" week-days="su;mo;tu;we;th;fr;sa"/>
+					<time-interval end-time="24:00" start-time="19:00" week-days="su;mo;tu;we;th;fr;sa"/>
+				</automation>
+				<automation enabled="yes" motion-level="15" motion-sensors="543:56;564:48;564:16;577:48;577:40;543:32" time-interval="300" type="off-by-moving"/>
+			</item>
+			<item addr="577:48" cfgid="6" name="Дв Гостиная \10возле ГСУ" type="motion-sensor"/>
+		</area>
+		<area name="Кор. 2" name-en="" name-ru="">
+			<item addr="776:3" auto-period="600" cfgid="17" name="Подсветка 2 коридор" type="lamp">
+				<automation enabled="yes" illumination-level="10" motion-level="30" motion-sensors="543:56;564:48;564:16;577:40;543:32" time-interval="3" time-interval2="1" type="on-by-moving"/>
+				<automation illumination-level="15" illumination-sensors="439:2" time-interval="300" type="off-by-illumination"/>
+				<automation enabled="yes" motion-level="15" motion-sensors="543:56;564:48;564:16;577:48;577:40;543:32" time-interval="300" type="off-by-moving"/>
+			</item>
+			<item addr="577:40" cfgid="6" name="Дв коридор \10вход постирочная " name-ru="Дв коридор \10вход постирочная " type="motion-sensor"/>
+		</area>
+	</area>
+	<area name="Инженерия " name-en="" name-ru="Инженерия ">
+		<area name="Вода" name-en="" name-ru="">
+			<item addr="532:24" cfgid="9" name="Коллектор щитовой" type="leak-sensor"/>
+			<item addr="532:25" cfgid="9" name="С/У хоз под раковиной" type="leak-sensor"/>
+			<item addr="532:32" cfgid="9" name="Протечка 7" type="leak-sensor"/>
+			<item addr="532:33" cfgid="9" name="Протечка СУ" type="leak-sensor"/>
+			<item addr="513:16" cfgid="10" hw="T 40" leak-sensors="532:9;532:8;532:17;502:33;502:32;502:24" name="Постирочная" type="valve"/>
+			<item addr="534:40" cfgid="10" hw="T 40" image="valve" leak-sensors="540:24;540:25;540:32;540:33;532:16" name="Стояк ГСУ" type="valve"/>
+			<item addr="534:32" cfgid="10" hw="T 40" image="lamp" name="Сброс постирочная" type="valve"/>
+			<item addr="534:8" cfgid="10" hw="T 40" image="lamp" name="Сброс ГСУ" type="valve"/>
+			<item addr="540:24" cfgid="9" name="ГСУ пол" type="leak-sensor"/>
+			<item addr="540:25" cfgid="9" name="ГСУ коллектор" type="leak-sensor"/>
+			<item addr="540:32" cfgid="9" name="Детский С/У пол" type="leak-sensor"/>
+			<item addr="540:33" cfgid="9" name="Детский С/У за стен" type="leak-sensor"/>
+			<item addr="532:17" cfgid="9" name="Хоз С/У за стеной" type="leak-sensor"/>
+			<item addr="532:16" cfgid="9" name="Кухня" type="leak-sensor"/>
+			<item addr="532:9" cfgid="9" name="Постирочная" type="leak-sensor"/>
+			<item addr="532:8" cfgid="9" name="Протечка под ванной" type="leak-sensor"/>
+		</area>
+		<area name="Тепло" name-en="" name-ru="Тепло">
+			<item addr="775:2" auto-period="600" automation="Эко" cfgid="17" name="ТП Прихожая" temperature-sensors="512:48" type="valve-heating">
+				<automation name="Эко" temperature-level="21"/>
+			</item>
+			<item addr="512:48" cfgid="40" hw="zero-offset 20" name="ТП Прихожая" type="temperature-sensor"/>
+			<item addr="761:1" auto-period="600" automation="Эко" cfgid="17" hw="I" name="Детская 1\10Конвектор" name-ru="Конвектор  Д.1" temperature-sensors="540:56" type="valve-heating">
+				<automation name="Эко" temperature-level="19"/>
+			</item>
+			<item addr="540:56" cfgid="40" name="Детская 1" name-ru="Конвектор Д.1" type="temperature-sensor"/>
+			<item addr="775:6" auto-period="600" automation="Эко" cfgid="17" name="ТП окно\10Детская 1" name-ru="Окно Д.1" temperature-sensors="510:48" type="valve-heating">
+				<automation name="Эко" temperature-level="26"/>
+			</item>
+			<item addr="510:48" cfgid="40" name="ТП окно\10Детская 1" name-ru="Окно Д.1" type="temperature-sensor"/>
+			<item addr="798:2" auto-period="600" automation="Эко" cfgid="17" name="ТП окно&#10;Спальня" name-ru="Окно С." temperature-sensors="502:16" type="valve-heating">
+				<automation name="Эко" temperature-level="19"/>
+			</item>
+			<item addr="502:16" cfgid="40" name="ТП окно\10Спальня" name-ru="Окно С." type="temperature-sensor"/>
+			<item addr="761:4" auto-period="600" automation="Эко" cfgid="17" hw="I" name="Спальня " name-ru="Конвектор С." temperature-sensors="510:40" type="valve-heating">
+				<automation name="Эко" temperature-level="19"/>
+			</item>
+			<item addr="510:40" cfgid="40" name="Спальня" name-ru="Конвектор С." type="temperature-sensor"/>
+			<item addr="775:7" auto-period="600" automation="Эко" cfgid="17" hw="relay-only" name="ТП ХОЗ/СУ" name-ru="ТП ХОЗ С/У" temperature-sensors="540:16" type="valve-heating">
+				<automation name="Эко" temperature-level="27"/>
+			</item>
+			<item addr="540:16" cfgid="40" name="ТП ХОЗ С/У" name-ru="ТП ХОЗ С/У" type="temperature-sensor"/>
+			<item addr="761:6" auto-period="600" automation="Эко" cfgid="17" hw="I" name="Детская 2" name-ru="Конвектор Д.2" temperature-sensors="565:16" type="valve-heating">
+				<automation name="Эко" temperature-level="19"/>
+			</item>
+			<item addr="565:16" cfgid="40" name="Детская 2" name-ru="Конвектор Д.2" type="temperature-sensor"/>
+			<item addr="761:5" auto-period="600" automation="Эко" cfgid="17" name="ТП окно\10Детская 2" name-ru="Окно Д.2" temperature-sensors="565:48" type="valve-heating">
+				<automation name="Эко" temperature-level="21"/>
+			</item>
+			<item addr="565:48" cfgid="40" name="ТП окно\10Детская 2" name-ru="Окно Д.2" type="temperature-sensor"/>
+			<item addr="798:4" auto-period="600" automation="Эко" cfgid="17" name="ТП С/У Детский" name-ru="ТП С/У Детский" temperature-sensors="502:64" type="valve-heating">
+				<automation name="Эко" temperature-level="28"/>
+			</item>
+			<item addr="502:64" cfgid="40" name="ТП С/У Детский" name-ru="ТП С/У Детский" type="temperature-sensor"/>
+			<item addr="761:7" auto-period="600" automation="Эко" cfgid="17" hw="I" name="Детская 3" name-ru="Конвектор Д.3" temperature-sensors="512:56" type="valve-heating">
+				<automation name="Эко" temperature-level="20"/>
+			</item>
+			<item addr="512:56" cfgid="40" name="Детская 3" name-ru="Конвектор Д.3" type="temperature-sensor"/>
+			<item addr="798:1" auto-period="600" automation="Эко" cfgid="17" name="ТП окно&#10;Детская 3" name-ru="Окно Д.3" temperature-sensors="512:24" type="valve-heating">
+				<automation name="Эко" temperature-level="21"/>
+			</item>
+			<item addr="512:24" cfgid="40" name="ТП окно\10Детская 3" name-ru="Окно Д.3" type="temperature-sensor"/>
+			<item addr="775:1" auto-period="600" automation="Эко" cfgid="17" name="ТП постирочная" temperature-sensors="502:56" type="valve-heating">
+				<automation name="Эко" temperature-level="21"/>
+			</item>
+			<item addr="502:56" cfgid="40" name="ТП постирочная" type="temperature-sensor"/>
+			<item addr="761:8" auto-period="600" automation="Эко" cfgid="17" hw="I" name="Гостиная" temperature-sensors="513:56" type="valve-heating">
+				<automation name="Эко" temperature-level="19"/>
+			</item>
+			<item addr="513:56" cfgid="40" name="Гостиная  темп" name-ru="Гостиная  " type="temperature-sensor"/>
+			<item addr="775:4" auto-period="600" automation="Эко" cfgid="17" hw="relay-only" name="ТП окно 1\10Гостиная" name-ru="Окно 1 Гос." temperature-sensors="540:48" type="valve-heating">
+				<automation name="Эко" temperature-level="27"/>
+			</item>
+			<item addr="540:48" cfgid="40" name="ТП окно 1\10Гостиная" name-ru="Окно 1 Гос." type="temperature-sensor"/>
+			<item addr="775:8" auto-period="600" automation="Эко" cfgid="17" hw="relay-only" name="ТП окно 2\10Гостиная" name-ru="Окно 2 Гос." temperature-sensors="510:16" type="valve-heating">
+				<automation name="Эко" temperature-level="20"/>
+			</item>
+			<item addr="510:16" cfgid="40" name="ТП окно 2\10Гостиная" name-ru="Окно 2 Гос." type="temperature-sensor"/>
+			<item addr="798:3" auto-period="600" automation="Эко" cfgid="17" name="ТП окно 3&#10;Гостиная" name-ru="Окно 3 Гос." temperature-sensors="510:32" type="valve-heating">
+				<automation name="Эко" temperature-level="36"/>
+			</item>
+			<item addr="510:32" cfgid="40" name="ТП окно 3\10Гостиная" name-ru="Окно 3 Гос." type="temperature-sensor"/>
+			<item addr="775:3" auto-period="600" automation="Эко" cfgid="17" hw="relay-only" name="ТП ГСУ" temperature-sensors="565:40" type="valve-heating">
+				<automation name="Эко" temperature-level="25"/>
+			</item>
+			<item addr="565:40" cfgid="40" name="ТП ГСУ" type="temperature-sensor"/>
+			<item addr="761:2" auto-period="600" automation="Эко" cfgid="17" name="ТП С/У" temperature-sensors="502:48" type="valve-heating">
+				<automation name="Эко" temperature-level="26"/>
+			</item>
+			<item addr="502:48" cfgid="40" name="ТП С/У" type="temperature-sensor"/>
+			<item addr="540:40" cfgid="40" name="Стояк Постирочная" type="temperature-sensor"/>
+			<item addr="502:40" cfgid="40" name="Стояк ГСУ" type="temperature-sensor"/>
+			<renderer-enabled udn="*"/>
+			<renderer-enabled udn="uuid:SH-MR-Speaker-209-30"/>
+			<import-script L00="568:27" L01="568:26" L02="568:25" L03="568:24" P00="578:33" id="439" name="Светильники гостиная" name-ru="Светильники гостиная" path="scripts/1-svet-barin.txt"/>
+		</area>
+		<area name="Машина" name-en="" name-ru=""/>
+		<item addr="578:24" auto-period="600" cfgid="11" hw="I" image="closing-switch" name="Дверь" name-ru="Дверь" type="lamp"/>
+		<item addr="776:6" auto-period="600" cfgid="17" image="pump" name="Питание замка двери" type="lamp"/>
+		<item addr="764:8" auto-period="600" cfgid="17" image="script" name="Перезагрузка" name-ru="Перезагрузка" type="lamp"/>
+		<area name="Шторы" name-en="" name-ru="">
+			<item addr="518:24" cfgid="10" name="Жалюзи 3" sub-type="120" type="jalousie"/>
+			<item addr="518:40" cfgid="10" name="Жалюзи 5" sub-type="120" type="jalousie"/>
+			<item addr="513:40" cfgid="10" name="Жалюзи 4" sub-type="120" type="jalousie"/>
+		</area>
+		<item ITEM101="502:24" ITEM102="502:25" ITEM103="540:24" ITEM104="540:25" ITEM105="540:32" ITEM106="540:33" ITEM107="502:32" ITEM108="502:33" ITEM109="532:17" ITEM110="532:16" ITEM111="532:9" ITEM112="532:8" addr="502:250" name="Уборка" name-ru="Уборка" path="scripts/1-ignor-prot.txt" type="script"/>
+		<item ITEM101="775:5" ITEM102="495:3" ITEM103="578:29" ITEM104="578:28" ITEM105="578:27" ITEM106="578:26" ITEM107="578:25" ITEM108="439:6" ITEM109="439:8" ITEM110="776:8" ITEM111="776:7" ITEM112="776:6" ITEM113="776:4" ITEM114="776:2" ITEM115="374:2" ITEM116="435:3" ITEM117="435:3" ITEM118="358:3" ITEM119="764:5" ITEM120="358:4" ITEM121="776:5" ITEM122="764:2" ITEM123="358:2" ITEM124="374:1" ITEM125="278:2" ITEM126="495:2" ITEM127="798:6" ITEM129="798:7" ITEM130="482:4" ITEM131="278:3" ITEM132="482:1" ITEM133="482:3" ITEM134="764:4" ITEM135="764:7" ITEM136="374:3" ITEM137="278:1" ITEM138="764:3" ITEM139="761:3" ITEM140="435:2" ITEM141="764:1" ITEM142="435:4" ITEM143="358:1" ITEM144="278:4" ITEM145="495:1" ITEM146="578:32" ITEM147="798:8" ITEM148="495:1" ITEM149="374:4" ITEM150="798:5" ITEM151="776:1" ITEM152="495:4" ITEM155="435:1" ITEM156="482:2" ITEM157="374:4" ITEM159="764:6" ITEM160="776:3" ITEM161="568:27" ITEM162="568:26" ITEM163="568:24" addr="775:250" name="Выключить все" name-ru="Выключить все" path="scripts/1-vikl.txt" type="script"/>
+		<import-script L00="482:3" TIME00="180" V00="776:8" id="568" name="Вытяжка ГСУ" name-ru="Вытяжка ГСУ" path="scripts/1-vit-vit.txt"/>
+		<import-script DIM01="495:3" DIM02="374:2" DIM03="435:3" DIM04="358:3" DIM05="358:4" DIM06="358:2" DIM07="374:1" T="3" id="507" name="Д1" name-ru="Д1" path="scripts/1-Dimmeroff.txt"/>
+		<import-script DIM01="278:2" DIM02="495:2" DIM03="482:4" DIM04="278:3" DIM05="568:27" DIM06="568:26" DIM07="568:25" T="3" id="507" name="д2" path="scripts/1-Dimmeroff.txt"/>
+		<import-script DIM01="568:24" DIM02="482:1" DIM03="482:3" DIM04="374:3" DIM05="278:1" DIM06="435:2" DIM07="435:4" T="3" id="540" name="д3" path="scripts/1-Dimmeroff.txt"/>
+		<import-script DIM01="358:1" DIM02="278:4" DIM03="495:1" DIM04="374:4" DIM05="495:4" DIM06="435:1" DIM07="482:2" T="3" id="518" name="д4" path="scripts/1-Dimmeroff.txt"/>
+		<import-script L00="358:4" TIME00="180" V00="776:2" id="502" name="Вытяжка спальная" name-ru="Вытяжка спальная" path="scripts/1-vit-vit.txt"/>
+		<import-script L00="374:3" TIME00="180" V00="776:7" id="510" name="Вытяжка постирочная" name-ru="Вытяжка постирочная" path="scripts/1-vit-vit.txt"/>
+		<import-script L00="374:4" TIME00="180" V00="776:4" id="510" name="Вытяжка Детский СУ" name-ru="Вытяжка Детский СУ" path="scripts/1-vit-vit.txt"/>
+	</area>
+</smart-house>

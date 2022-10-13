@@ -1,0 +1,6 @@
+{
+  "appId": "com.mimismart.app",
+  "appName": "mimismart",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 24 24" style="enable-background:new 0 0 24 24;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#A6ABFF;}
+	.st1{fill:#535DFF;}
+	.st2{opacity:0.5;fill:#FFFFFF;enable-background:new    ;}
+</style>
+<rect id="const" x="4" y="3" class="st0" width="16" height="19"/>
+<path id="variable" class="st1" d="M21,23H3V2h18V23z M5,21h14V4H5V21z"/>
+<g id="blinds">
+	<path class="st1" d="M1,2h22l-2,3H3L1,2z M1,8h22l-2,3H3L1,8z M1,14h22l-2,3H3L1,14z M1,20h22l-2,3H3L1,20z"/>
+	<path class="st0" d="M1,8h22l-2-3H3L1,8z M1,14h22l-2-3H3L1,14z M1,20h22l-2-3H3L1,20z"/>
+</g>
+<g>
+	
+		<rect id="hl2" x="9.9" y="-0.1" transform="matrix(0.5933 -0.805 0.805 0.5933 -4.9697 14.0024)" class="st2" width="3" height="24"/>
+	
+		<rect id="hl1" x="12.7" y="-3.5" transform="matrix(0.5933 -0.805 0.805 0.5933 -1.4815 14.0628)" class="st2" width="1" height="24"/>
+</g>
+<rect id="mask-highlights" x="4" y="3" class="st0" width="16" height="19"/>
+</svg>

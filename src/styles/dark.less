@@ -1,0 +1,107 @@
+@import 'vars.less';
+.theme-dark {
+    background: #262933;
+    color: #fff;
+    .modal-device-settings {
+        .modal-contents {
+            background-color: @colorBgDark;
+            border: 2px solid #4C6CF6;
+        }
+        .tabs-nav {background-color: @colorBgDark300;}
+    }
+    .icon-tile {
+        background: @colorBgDark200 !important;
+        &.on .fill-variable {fill: #fff;}
+        &.on::before {
+            background: linear-gradient(135deg, @colorMainDark 13.46%, darken(@colorMainDark, 5%) 84.13%);
+        }
+    }
+    .--disabled .fill-variable {fill: darken(@headerText, 12%);}
+    .--disabled .fill-const {fill: @headerText;}
+    .on .fill-variable {fill: @colorMainDark}
+    .devices-by-category {
+        &::-webkit-scrollbar {
+            background: #4C5266;
+        }
+        &::-webkit-scrollbar-track {
+            background: #1C1E26;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: #4C5266;
+            border-radius: 100px;
+            border: 4px solid #1C1E26;
+            // outline: 1px solid slategrey;
+        }
+    }
+    .sidebar {
+        background: #262933;
+        border-right: 1px solid #353842;
+    }
+    .tabs-nav {
+		color: @headerText;
+        background-color: @colorBgDark300;
+		.active, .--active {color: #fff;}
+    }
+    .icon-tile.sensor .value, .icon-tile.sensor .value.--text-value {
+        color: @headerText !important;
+    }
+    .modal-head {
+        background: #4C6CF6 !important;
+        border-radius: 4px 4px 0 0;
+        padding-top: 0;
+        .icon-close {fill: #fff}
+        .icon-tuning .fill-variable {fill: #fff;}
+    }
+    .modal-control-contents-centered {
+        background: @colorBgDark;
+        border: 2px solid #4C6CF6;
+    }
+    .controls-footer .label {color: @headerText;}
+    .knob {
+        .knob-cir {
+            fill: @colorBgDark300;
+            stroke: lighten(@colorBgDark300, 10%);
+        }
+        .range-full {stroke: lighten(@colorBgDark300, 35%);}
+        .range-active {stroke: @colorMainDark;}
+        .knob-handle::before {
+            background: @colorMainDark;
+        }
+        .active-temp {color: @colorMainDark !important;}
+        .room-temp {color: @headerText !important;}
+    }
+    .device-status-title {
+        background: lighten(@colorBgDark300, 35%);
+        color: #000;
+    }
+    .btn-icon.rounded {border-color: lighten(@colorBgDark, 30%);}
+    .mode-select-dropdown__active-mode-title {
+        background: @colorBgDark200;
+        border-color: @colorMainDark;
+    }
+    .stepper .value {color: @colorMainDark !important;}
+    .connected-switch {
+        background-color: rgba(255,255,255,0.1) !important;
+        border-color: rgba(0, 0, 0, 0.3) !important;
+    }
+    .notification-item {
+        background: @colorBgDark300 !important;
+        .col-device {color: @headerText;}
+    }
+    .header .devices-by-category {
+        color: #fff !important;
+        background: @colorBgDark !important;
+        z-index: 1;
+    }
+    .swiper-container {
+        .swiper-wrapper, & .swiper-slide {background: @colorBgDark !important;}
+    }
+    .location-head .col-title {color: #A6ABFF;}
+    .modal-body {color: #000;}
+    .light-ray {
+        stroke: #A0D7E7;
+    }
+    .floor-room-item.--active .room-name {color: @colorMainDark;}
+    .--disabled .mode-item.--active {background: #43444a !important;}
+    .stepper-title .value {color: @colorMainDark !important;}
+}

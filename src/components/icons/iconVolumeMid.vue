@@ -1,0 +1,16 @@
+<template>
+	<div class="icon-mic" :class="{on: isOn}">
+		<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+			<path class="fill-variable" d="M18.5 12C18.5 10.23 17.48 8.71 16 7.97V16.02C17.48 15.29 18.5 13.77 18.5 12ZM5 9V15H9L14 20V4L9 9H5Z"/>
+		</svg>
+	</div>
+</template>
+
+<script>
+export default {
+	props: ['isOn']
+}
+</script>
+
+<style lang="less" scoped>
+</style>
