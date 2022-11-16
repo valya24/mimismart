@@ -1,25 +1,32 @@
 <template>
 	<WidgetItem :icon="icon"
 		:currentTemp="isNaN(Math.round(roomTemp)) ? undefined : ''+Math.round(roomTemp)"
-		:name="name" :addr="addr" :isActive="isActive"
+		:name="name" :addr="addr" :isActive="+conditioner.isActive"
 		:value="status[0]"
+    :statusMessage="statusMessage"
 		@toggle="handleToggle"
 		:active-text="statusMessage"
 	>
-		<ModeSelectDropdown :class="{ '--disabled': !isActive }"
+		<ModeSelectDropdown :class="{ '--disabled': !+conditioner.isActive }"
+      v-if="modes.length"
 			:modes="modes"
-			:activeMode="controller.mode"
+			:activeMode="conditioner.mode"
 			:valueKey="'key'"
 			:emitKey="'key'"
 			@selectMode="selectMode"
 		/>
 
-		<BtnIcon icon="icon-powerlevel" :disabled="!isActive"
-      :value="controller.powerlevel"
+		<BtnIcon icon="icon-powerlevel" :disabled="!+conditioner.isActive"
+      v-if="modes.length"
+      :value="+conditioner.powerLevel"
       @click.native="handlePowerlevelChange" />
 
+    <BtnIcon icon="icon-powerlevel" :disabled="!+conditioner.isActive"
+             v-else
+             :value="2"/>
+
 		<BtnIcon icon="icon-minus" class="right"
-			:disabled="!isActive"
+			:disabled="!+conditioner.isActive"
 			@touchstart.native="handleBtnTouchStart(-1)"
 			@click.native="handleBtnClick(-1)"
 			@touchend.native="handleBtnTouchEnd"
@@ -28,12 +35,12 @@
 		/>
 		<transition name="counter" mode="out-in">
 			<div class="value" :key="currTemp"
-				:class="{ '--disabled': !isActive }">
-				{{ currTemp }}&deg;
+				:class="{ '--disabled': !+conditioner.isActive }">
+				{{ Math.round(conditioner.temp) }}&deg;
 			</div>
 		</transition>
 
-		<BtnIcon icon="icon-plus" :disabled="!isActive"
+		<BtnIcon icon="icon-plus" :disabled="!+conditioner.isActive"
 			@touchstart.native="handleBtnTouchStart(1)"
 			@click.native="handleBtnClick(1)"
 			@touchend.native="handleBtnTouchEnd"
@@ -48,6 +55,8 @@ import WidgetItem from "@/components/widgets/WidgetItem";
 import ModeSelectDropdown from "@/components/etc/ModeSelectDropdown"
 
 import { ConditionerController } from "@/utils/deviceControllers";
+import {mapActions, mapGetters} from "vuex";
+import {hexToDecimal, replaceAt} from "@/utils/transformers";
 
 const MIN_TEMP = 16;
 const TEMP_DELTA = 16;
@@ -70,12 +79,59 @@ export default {
 	data() {
 		return {
 			modesIcons,
-			
+      roomId: null,
 			interval: null,
 			timeout: null,
     };
 	},
-	computed: {
+  async mounted() {
+    this.roomId = this.$route.params.id
+    await this.subscribeRequest(this.addr);
+  },
+  watch: {
+    devices: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (!Array.isArray(val) && val.addr === this.addr) {
+          const temp = hexToDecimal(val.state, 'conditioner')
+          const conditionerData = {
+            temp,
+            state: val.state,
+            isActive: val.state.charAt(1),
+            mode: val.state.charAt(0),
+            powerLevel: val.state.charAt(9),
+            vaneHorMode: val.state.charAt(7),
+            vaneVerMode: val.state.charAt(6)
+          }
+
+          this.$store.commit('setConditionerData', conditionerData)
+        }
+      }
+    },
+    sensorDevice: {
+      deep: true,
+      handler(val) {
+
+        if (val.addr !== this.addr) return
+        const temp = hexToDecimal(val.status, 'conditioner')
+        const conditionerData = {
+          temp,
+          state: val.status,
+          isActive: val.status.charAt(1),
+          mode: val.status.charAt(0),
+          powerLevel: val.status.charAt(9),
+          vaneHorMode: val.status.charAt(7),
+          vaneVerMode: val.status.charAt(6)
+        }
+
+        this.$store.commit('setConditionerData', conditionerData)
+      }
+    },
+  },
+  computed: {
+    ...mapGetters(['conditioner']),
+    ...mapGetters('ws', ['sensorDevice', 'devices']),
 		controller() {
 			return this.$store.state.controllers[this.addr];
 		},
@@ -83,7 +139,7 @@ export default {
 			return this.controller.isActive;
 		},
 		modes() {
-			return this.controller.modes.map( item => ({ ...item, name: this.$t(item.name) }) );
+			return this.controller.modes.map( (item, i) => ({ ...item, key: i, name: this.$t(item.name) }) );
 		},
 		// activeMode() {
 		// 	return this.controller.mode;
@@ -115,59 +171,94 @@ export default {
     currentModeIcon() {
       return this.modesIcons[Number(this.controller.mode)];
 		},
-		
-		statusMessage() {
-			switch (this.controller.mode) {
-				case 0:
-					return this.$t('Ventilation');
-				case 2:
-					return this.$t('Drying');
-				case 1:
-					return (this.roomTemp > this.currTemp) ? this.$t('Cooling') : this.$t('Ventilation');
-				case 3:
-					return (this.roomTemp < this.currTemp) ? this.$t("Heating") : this.$t('Ventilation');
-				case 4:
-					if (this.roomTemp < this.currTemp) {
-						return this.$t("Heating");
-					} else if (this.roomTemp > this.currTemp) {
-						return this.$t('Cooling')
-					} else {
-						return this.$t('Ventilation')
-					}
-				default: return this.$t('Ventilation');
-			}
-		}
+    activeModeItem() {
+      return this.modes.find( item => item.key === +this.conditioner.mode );
+    },
+    statusMessage() {
+      if (this.activeModeItem) {
+        switch (this.activeModeItem.key) {
+          case 0:
+            return this.$t('Ventilation');
+          case 2:
+            return this.$t('Drying');
+          case 1:
+            return this.$t('Cooling');
+          case 3:
+            return this.$t("Heating");
+          case 4:
+            if (this.roomTemp < +this.conditioner.temp) {
+              return this.$t("Heating");
+            } else if (this.roomTemp > +this.conditioner.temp) {
+              return this.$t('Cooling')
+            } else {
+              return this.$t('Ventilation')
+            }
+          default: return this.$t('Ventilation');
+        }
+      } else {
+        return this.$t('Ventilation')
+      }
+
+    }
 	},
 	methods: {
-		handleToggle(value) {
-      if (!this.checkEditPermission()) return;
+    ...mapActions('modules/settings', ['subscribeRequest']),
+		async handleToggle() {
+      let isActive = +this.conditioner.isActive ? '0' : '1'
+      const active = replaceAt(this.conditioner.state, 1, isActive)
 
-			if (value == undefined) {
-				value = !this.isActive;
-			}
-			return this.controller.toggle(value);
+      this.controller.toggle(active)
+      const addrs = this.$store.getters.getRoomItems(this.roomId);
+      await this.subscribeRequest(addrs.map(addr => addr.attributes.addr))
 		},
 		incrementTemp() {
-      if (!this.checkEditPermission()) return;
+      let temp
+      if (this.conditioner.temp + 1 <= this.maxTemp) {
+        let inc = +this.conditioner.temp
+        temp = inc += 1;
+        const dec = Math.abs(temp.toFixed()).toString(16);
 
-			let temp = (this.currTemp + 1 <= this.maxTemp) ? this.currTemp + 1 : this.maxTemp;
-			this.controller.changeTemp(temp);
+        const str = this.conditioner.state.split('')
+
+        str[2] = dec[0]
+        str[3] = dec[1]
+        this.controller.changeMode(str.join(""));
+        return temp
+      } else {
+        temp = this.conditioner.temp = this.maxTemp
+        return temp;
+      }
 		},
 		decrementTemp() {
-      if (!this.checkEditPermission()) return;
+      let temp
+      if (this.conditioner.temp - 1 >= this.minTemp) {
+        temp = this.conditioner.temp -= 1
+        const dec = Math.abs(+temp.toFixed()).toString(16);
 
-			let temp = (this.currTemp - 1 >= this.minTemp) ? this.currTemp - 1 : this.minTemp;
-			this.controller.changeTemp(temp);
+        const str = this.conditioner.state.split('')
+
+        str[2] = dec[0]
+        str[3] = dec[1]
+        this.$emit('changeMode',str.join(""));
+        return temp;
+      } else {
+        temp = this.conditioner.temp = this.minTemp
+        return temp;
+      }
     },
-    handlePowerlevelChange() {
-      if (!this.checkEditPermission()) return;
+    async handlePowerlevelChange() {
+      if (!+this.conditioner.isActive) return;
+      const status = this.conditioner.state.split('')
+      status[9] = (+this.conditioner.powerLevel + 1) % 4
+      this.controller.changeMode(status.join(''))
 
-      this.controller.changePower((this.controller.powerlevel + 1) % 4);
+      const addrs = this.$store.getters.getRoomItems(this.roomId);
+      await this.subscribeRequest(addrs.map(addr => addr.attributes.addr))
 		},
 		selectMode(mode) {
-      if (!this.checkEditPermission()) return;
-
-      this.controller.changeMode(mode);
+      if (!+this.conditioner.isActive) return;
+      const removed = this.conditioner.state.slice(1);
+      this.controller.changeMode(`${mode}${removed}`);
 		},
 		
 		checkEditPermission() {
@@ -180,6 +271,7 @@ export default {
 		
 		//	Plus & Minus buttons hold
 		handleBtnClick(val) {
+      if (!+this.conditioner.isActive) return;
       if (val > 0) {
         this.incrementTemp();
       } else {
@@ -187,6 +279,7 @@ export default {
       }
     },
 		handleBtnTouchStart(val) {
+      if (!+this.conditioner.isActive) return;
 			this.timeout = setTimeout( () => {
 				this.handleBtnClick(val);
 				this.interval = setInterval( () => {

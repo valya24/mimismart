@@ -1,10 +1,10 @@
 <template>
-  <Header ref="headerContainer">
+  <Header id="header" ref="headerContainer">
     <div class="header__title" ref="title">
       <div class="header__title-icon" ref="titleIcon">
         <icon-comp :isOn="true" iconName="icon-home"/>
       </div>
-      <span ref="titleSpan">
+      <span ref="titleSpan" class="ios-style">
         {{ 'Мой Дом' }}
       </span>
     </div>
@@ -13,6 +13,7 @@
 
 <script>
 import Header from "@/components/Header.vue";
+import {isPlatform} from "@ionic/vue";
 
 const maxProgress = 1.25;
 const iconYOffset = 54;
@@ -21,8 +22,9 @@ const opacityThreshold = 0.65;
 export default {
   data() {
     return {
+      isIos: null,
       pullRatio: 0.5,
-
+      elem: null,
 			pulling: false,
 			startY: 0,
       currentX: 0,
@@ -46,9 +48,13 @@ export default {
       dynamicHeaderEnabled: false,
     }
   },
+  mounted() {
+    this.isIos = isPlatform('ios')
+    this.elem = document.getElementById('header');
+  },
   methods: {
     toggleScrolling() {
-      document.body.style['overflow'] = this.pulling ? 'hidden hidden' : 'hidden auto';
+      // document.body.style['overflow'] = this.pulling ? 'hidden hidden' : 'hidden auto';
 
       this.routeContainers.forEach( cont => {
         cont.style['overflow'] = this.pulling ? 'hidden' : 'visible';
@@ -57,8 +63,8 @@ export default {
     initPulling() {
       this.pulling = true;
       this.toggleScrolling();
-			this.$el.style.transition = '0s';
-      this.containerEl.style.transition = "0s";
+			// this.elem.style.transition = '0s';
+      // this.containerEl.style.transition = "0s";
       this.containerEl.style['overflow-x'] = "visible";
       this.titleSpan.style.transition = `0s`
       this.titleIcon.style.transition = "0s";
@@ -83,13 +89,13 @@ export default {
       
       this.currentX = e.targetTouches[0].screenX - this.startX;
 
-      if (!this.pulling && document.documentElement.scrollTop == 0 && dy > 0) {
-        this.initPulling();
-        if (!e.target.closest('.devices-by-category')) {
-          e.preventDefault();
-        }
-        e.stopPropagation();
-      }
+      // if (!this.pulling && document.documentElement.scrollTop == 0 && dy > 0) {
+      //   this.initPulling();
+      //   if (!e.target.closest('.devices-by-category')) {
+      //     e.preventDefault();
+      //   }
+      //   e.stopPropagation();
+      // }
       if (dy < 0 && this.containerEl.scrollTop == 0 && !this.pulling) {
         return;
       }
@@ -118,7 +124,7 @@ export default {
         this.pulledHeight += dy * this.pullRatio;
       }
       this.containerEl.style.transform = `translateY(${this.pulledHeight + this.overpulledHeight}px)`;
-      this.$el.style.transform = `translateY(${this.pulledHeight + this.overpulledHeight}px)`;
+      this.elem.style.transform = `translateY(${this.pulledHeight + this.overpulledHeight}px)`;
       
       this.progress = (this.pulledHeight + this.overpulledHeight) / this.fixThreshold;
       if (this.progress > maxProgress) {
@@ -127,7 +133,7 @@ export default {
       let scale = 1 + this.progress * 1.4;
       // let transX = this.progress * (this.$el.offsetWidth - 28 - scale * this.startWidth) / 2;
       // let transX = this.progress * (this.$el.offsetWidth - 28 - this.endWidth) / 2;
-      let transX = (this.progress < 1 ? this.progress : 1) * ( this.$el.offsetWidth - 28 - this.startWidth * scale ) / 2;
+      let transX = (this.progress < 1 ? this.progress : 1) * ( this.elem.offsetWidth - 28 - this.startWidth * scale ) / 2;
       let h = this.titleSpan.clientHeight * scale;
       let transY = -1 * this.progress * (this.pulledHeight - this.overpulledHeight*0.7 - h) / 2;
 
@@ -140,10 +146,10 @@ export default {
       // this.titleSpan.style['letter-spacing'] = `${-0.05 * this.progress}em`;
 		},
 		handleTouchEnd() {
-      this.containerEl.style.transition = ".3s";
+      // this.containerEl.style.transition = ".3s";
       this.titleSpan.style.transition = ".2s";
       this.titleIcon.style.transition = "transform .2s";
-      this.$el.style.transition = ".2s";
+      this.elem.style.transition = ".2s";
       this.pulling = false;
       this.toggleScrolling();
       this.startY = 0;
@@ -158,11 +164,11 @@ export default {
       ) {
         this.pulledHeight = this.fixThreshold;
         this.containerEl.style.transform = `translateY(${this.pulledHeight}px)`;
-        this.$el.style.transform = `translateY(${this.pulledHeight}px)`;
+        this.elem.style.transform = `translateY(${this.pulledHeight}px)`;
 
         this.progress = 1;
         let scale = 1 + this.progress * 1.4;
-        let transX = this.progress * (this.$el.offsetWidth - 28 - scale * this.startWidth) / 2;
+        let transX = this.progress * (this.elem.offsetWidth - 28 - scale * this.startWidth) / 2;
         let h = this.titleSpan.clientHeight * scale;
         let transY = -1 * this.progress * (this.fixThreshold - h) / 2;
 
@@ -175,11 +181,11 @@ export default {
         // this.titleSpan.style['letter-spacing'] = `${-0.05 * this.progress}em`;
       } else {
         this.pulledHeight = 0;
-        this.containerEl.style.transform = `none`;
-        this.$el.style.transition = '.3s';
-        this.$el.style.transform = `none`;
+        // this.containerEl.style.transform = `none`;
+        this.elem.style.transition = '.3s';
+        // this.elem.style.transform = `none`;
         this.titleSpan.style.transition = `.3s`
-        this.titleSpan.style.transform = `none`
+        // this.titleSpan.style.transform = `none`
       }
     },
     handleScroll(e) {
@@ -187,13 +193,13 @@ export default {
     },
 
     init() {
-      this.routeContainers = this.$router.currentRoute.matched.map( route => route.instances.default.$el );
+      // this.routeContainers = this.$router.currentRoute.matched.map( route => route.instances.default.$el );
 
       this.containerEl = this.routeContainers[this.routeContainers.length - 1];
 
-      this.containerEl.addEventListener('touchstart', this.handleTouchStart);
-      this.containerEl.addEventListener('touchmove', this.handleTouchMove);
-      this.containerEl.addEventListener('touchend', this.handleTouchEnd);
+      // this.containerEl.addEventListener('touchstart', this.handleTouchStart);
+      // this.containerEl.addEventListener('touchmove', this.handleTouchMove);
+      // this.containerEl.addEventListener('touchend', this.handleTouchEnd);
 
       document.addEventListener('scroll', this.handleScroll);
     },
@@ -201,16 +207,16 @@ export default {
       this.pulledHeight = 0;
       this.handleTouchEnd();
 
-      this.containerEl.removeEventListener('touchstart', this.handleTouchStart);
-      this.containerEl.removeEventListener('touchmove', this.handleTouchMove);
-      this.containerEl.removeEventListener('touchend', this.handleTouchEnd);
+      // this.containerEl.removeEventListener('touchstart', this.handleTouchStart);
+      // this.containerEl.removeEventListener('touchmove', this.handleTouchMove);
+      // this.containerEl.removeEventListener('touchend', this.handleTouchEnd);
 
       document.removeEventListener('scroll', this.handleScroll);
 
       this.routeContainers.forEach( cont => {
         cont.removeAttribute('style');
       })
-      this.$el.removeAttribute('style');
+      this.elem.removeAttribute('style');
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -263,6 +269,9 @@ export default {
       // transition: .25s;
       text-align: center;
       transform-origin: 0% 100%;
+    }
+    .ios-style {
+      bottom: -48px;
     }
     &::before {
       content: '';

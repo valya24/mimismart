@@ -6,20 +6,21 @@
   >
     <ACControl :slot="tabs[0]"
       :active="isActive"
-
+      :addr="addr"
       :minTemp="minTemp"
       :maxTemp="maxTemp"
       :temperature="minTemp + configData.__.status[1]"
       :roomTemp="roomTemp"
+      :configData="configData"
       :modes="modes"
       :mode="controller.mode"
       :powerlevels="powerlevels"
       :powerlevel="controller.powerlevel"
 
       :vaneHor="controller.vaneHor"
-      :vaneHorModes="controller.vaneHorModes"
+      :vaneHorModes="vaneHorModes"
       :vaneVer="controller.vaneVer"
-      :vaneVerModes="controller.vaneVerModes"
+      :vaneVerModes="vaneVerModes"
       
       @toggle="handleToggle"
       @changeMode="handleChangeMode"
@@ -70,10 +71,10 @@ export default {
       return this.controller.isActive;
     },
     minTemp() {
-      return parseInt(this.configData['t-min']) || MIN_TEMP;
+      return parseInt(this.configData.attributes['t-min']) || MIN_TEMP;
     },
     deltaTemp() {
-      return parseInt(this.configData['t-delta']) || TEMP_DELTA;
+      return parseInt(this.configData.attributes['t-delta']) || TEMP_DELTA;
     },
     maxTemp() {
       return (this.minTemp + this.deltaTemp);
@@ -81,8 +82,14 @@ export default {
     controller() {
       return this.$store.state.controllers[this.addr];
     },
+    vaneHorModes() {
+      return this.controller.vaneHorModes.map((item, i) => i)
+    },
+    vaneVerModes() {
+      return this.controller.vaneVerModes.map((item, i) => i)
+    },
     modes() {
-			return this.controller.modes.map( item => ({ ...item, name: this.$t(item.name) }) );
+			return this.controller.modes.map( (item, i) => ({ ...item, key: i, name: this.$t(item.name) }) );
     },
     powerlevels() {
 			return this.controller.powerlevels.map( item => ({ ...item, name: this.$t(item.name) }) );
@@ -105,11 +112,11 @@ export default {
       this.controller.changeTemp(value);
     },
 
-    cycleVaneHor() {
-      this.controller.cycleVaneHor();
+    cycleVaneHor(state) {
+      this.controller.cycleVaneHor(state);
     },
-    cycleVaneVer() {
-      this.controller.cycleVaneVer();
+    cycleVaneVer(state) {
+      this.controller.cycleVaneVer(state);
     },
   },
   created() {

@@ -19,39 +19,54 @@ export class ValveHeatingController extends DeviceController {
     let tempSensorAddr = this.item.attributes['temperature-sensors'];
 
     store.watch(
-      state => sensorDeviceInterfaces['temperature-sensor'].value(state.itemMap[tempSensorAddr].__.status),
+      state => sensorDeviceInterfaces['temperature-sensor'].value(state.itemMap[tempSensorAddr]?.__.status),
       (val) => {
         this.roomTemp = parseFloat(val);
       },
       { immediate: true })
 
-    let modes = props.item.elements.filter(el => el.name == "automation");
+    // TODO maybe refactor
+    // let modes = props.item.elements.filter(el => el.name == "automation");
+    let modes = [
+      {
+        attributes: {
+          name: "Auto",
+        }
+      }
+    ];
 
     this.modes = modes.map((item) => {
       let icon, key;
-      switch (item.attributes.name) {
-        case 'Eco':
-        case 'Econom':
-        case 'Эко':
-        case 'Эконом':
-          icon = 'econom';
-          key = 'econom';
-          break;
-        case 'Comfort':
-        case 'Комфорт':
-          icon = 'comfort';
-          key = 'comfort';
-          break;
-        case 'Hot':
-        case 'Жарко':
-        case 'Горяче':
-        case 'Горячо':
-          icon = 'hot'
-          key = 'hot'
-          break;
+      // TODO maybe refactor
+      // switch (item.attributes.name) {
+      //   case 'Eco':
+      //   case 'Econom':
+      //   case 'Эко':
+      //   case 'Эконом':
+      //     icon = 'econom';
+      //     key = 'econom';
+      //     break;
+      //   case 'Comfort':
+      //   case 'Комфорт':
+      //     icon = 'comfort';
+      //     key = 'comfort';
+      //     break;
+      //   case 'Hot':
+      //   case 'Жарко':
+      //   case 'Горяче':
+      //   case 'Горячо':
+      //   case 'Тепло':
+      //     icon = 'hot'
+      //     key = 'hot'
+      //     break;
+      // }
+      switch (item.attributes.name){
+        case "Auto":
+          icon = 'hot';
+          key = 'hot';
+        break;
       }
-      
-      return {
+        return {
         name: item.attributes.name,
         key,
         icon,
@@ -89,48 +104,33 @@ export class ValveHeatingController extends DeviceController {
     // this.roomTemp = status[4];
   }
   toggle(value) {
-    //  TODO: Refactor this probably
-    let isActive = this.autoModeActive ? true : this.isActive;
-    if (value == undefined) {
-      value = !isActive;
-    }
-    //  TODO: Change use of mode names to mode keys
-    if (this.mode == 'always-off' && value) {
-      this.changeMode(this.lastActiveMode);
-    }
-    if (this.mode != "Manual" && this.mode != 'always-off' && !value) {
-      this.changeMode('always-off');
-    }
-
-    super.toggle(value);
+    return store.dispatch('setStatus', {
+      addr: '1000:102',
+      status: `${this.addr}~${value}`
+    });
   }
   changeTemp(value) {
-    // this.temperature = Math.round(value);
-
-    // let autoObj = this.item.automation.reduce( (accum, item) => {
-    //   return item.$.name == this.mode ? item : accum;
-    // }, {})
-    let autoObj = this.item.elements.find((el) => el.name == 'automation' && el.attributes.name == this.mode);
-    autoObj.attributes['temperature-level'] = Math.round(value);
-
-    store.dispatch('changeItemXml', this.item);
+    return store.dispatch('setStatus', {
+      addr: '1000:102',
+      status: `${this.addr}~${value}`
+    });
   }
   changeMode(modeKey) {
     let mode = modeKey;
 
     //  TODO: Maybe refactor
-    let index = this.modes.map(item => item.key).indexOf(modeKey);
-    if (index != -1) {
-      mode = this.modes[index].name;
-    } else {
-      let nameIndex = this.modes.map(item => item.name).indexOf(mode);
-      if (nameIndex != -1) {
-        modeKey = this.modes[nameIndex].key;
-      }
-    }
+    // let index = this.modes.map(item => item.key).indexOf(modeKey);
+    // if (index != -1) {
+    //   mode = this.modes[index].name;
+    // } else {
+    //   let nameIndex = this.modes.map(item => item.name).indexOf(mode);
+    //   if (nameIndex != -1) {
+    //     modeKey = this.modes[nameIndex].key;
+    //   }
+    // }
 
     this.item.attributes.automation = mode == "Off" ? 'always-off' : mode;
-    this.lastActiveMode = this.mode;
+    // this.lastActiveMode = this.mode;
     this.item.attributes.lastActiveMode = this.lastActiveMode;
     this.mode = this.item.attributes.automation;
     this.autoModeActive = !(['always-off', 'manual'].includes(modeKey));
@@ -140,6 +140,19 @@ export class ValveHeatingController extends DeviceController {
       delete this.item.attributes.automation;
     }
     store.dispatch('changeItemXml', this.item);
+
+    let buffMode;
+
+    if (mode.includes('Manual') || mode.includes('ручной')) {
+      buffMode = 'as:-40'
+    } else {
+      buffMode = `${mode}0`
+    }
+
+    return store.dispatch('setStatus', {
+      addr: '1000:102',
+      status: `${this.addr}~${buffMode}`
+    });
   }
 }
 

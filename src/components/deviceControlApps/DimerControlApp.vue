@@ -8,16 +8,15 @@
       @change="handleControlChange"
       @toggle="handleToggle"
       :icon="icon"
+      :addr="addr"
       :active="isActive"
       :brightness="brightness" />
-    <!-- <ModalDeviceControlStats :slot="tabs[1]" /> -->
   </ModalDeviceControl>
 </template>
 
 <script>
 import ModalDeviceControl from "@/components/modals/ModalDeviceControl";
 import DimerControl from "@/components/deviceControls/DimerControl";
-// import ModalDeviceControlStats from "@/components/modals/ModalDeviceControlStats";
 
 import { DimmerController } from "@/utils/deviceControllers";
 
@@ -35,8 +34,6 @@ export default {
     tabs() {
       return [
         this.$t("Control"),
-        // this.$t("Statistics"),
-        // this.$t("Notifications")
       ];
     },
     item() {
@@ -74,7 +71,6 @@ export default {
   components: {
     ModalDeviceControl,
     DimerControl,
-    // ModalDeviceControlStats
   }
 }
 </script>

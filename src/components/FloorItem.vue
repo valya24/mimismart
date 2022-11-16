@@ -29,10 +29,6 @@ export default {
       
     }
   },
-
-  mounted() {
-    console.log(this.filteredRooms, 'roomroomroom')
-  },
   computed: {
     showSystem() {
 			return this.$store.state.modules.settings.interface.showSystem;

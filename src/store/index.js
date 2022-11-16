@@ -59,8 +59,16 @@ function filterItemsAndRefs (elArr, itemMap) {
 export default new Vuex.Store({
   state: {
     groups,
-    
+    currentRoomAddrs: null,
+    conditioner: {},
+    lamp: {},
+    jalousie: {},
+    gate: {},
+    valveHeating: {},
     logic: {},
+    dimmerLamp: {},
+    valve: {},
+    rgbLamp: {},
     floors: [],
     // config: {
     //   'smart-house' : {
@@ -78,6 +86,7 @@ export default new Vuex.Store({
 
     controllers: {},
     subscribedDevicesAddrs: [],
+    // activeItem: { attributes: {} }
   },
   getters: {
     // getAreaDataById: (state) => (id) => {
@@ -88,7 +97,18 @@ export default new Vuex.Store({
     //   return area.area.find( room => room.$.id == id );
     // },
 
-
+    itemMap: state => state.itemMap,
+    conditioner: state => state.conditioner,
+    jalousie: state => state.jalousie,
+    gate: state => state.gate,
+    lamp: state => state.lamp,
+    valve: state => state.valve,
+    // activeItem: state => state.activeItem,
+    valveHeating: state => state.valveHeating,
+    dimmerLamp: state => state.dimmerLamp,
+    currentRoomAddrs: state => state.currentRoomAddrs,
+    rgbLamp: state => state.rgbLamp,
+    getCurrentRoomAddrs: state => state.getRoomItems,
     getFloorRooms:(state) => (floorId) => {
       return state.floors.find( floor => floor.__.id == floorId ).elements
         .filter( el => el.name == "area" )
@@ -108,9 +128,11 @@ export default new Vuex.Store({
       return state.floors.find(floor => floor.__.id == id.split('-')[0] )
     },
     getRoomDataById: (state, getters) => (id) => {
+      if (!id) return
       return getters.getFloorRooms(id.split('-')[0]).find( room => room.__.id == id);
     },
     getRoomItems: (state, getters) => (roomId) => {
+      if (!getters.getRoomDataById(roomId)) return
       let itemArr = filterItemsAndRefs(getters.getRoomDataById(roomId).elements, state.itemMap);
 
       filterItemsAndRefs(getters.getAreaDataById(roomId).elements, state.itemMap)
@@ -162,11 +184,46 @@ export default new Vuex.Store({
     //   // state.areas.area = payload;
     //   state.logicParsed = true;
     // },
+    setCurrentRoomAddrs(state, addrs) {
+      Vue.set(state, 'currentRoomAddrs', addrs);
+    },
+    setConditionerData(state, payload) {
+      Vue.set(state, 'conditioner', payload);
+    },
+
+    setLampData(state, payload) {
+      Vue.set(state, 'lamp', payload);
+    },
+
+    setJalousieData(state, payload) {
+      Vue.set(state, 'jalousie', payload);
+    },
+    setGateData(state, payload) {
+      Vue.set(state, 'gate', payload);
+    },
+    setValveHeatingData(state, payload) {
+      Vue.set(state, 'valveHeating', payload);
+    },
+    setDimmerLampData(state, payload) {
+      Vue.set(state, 'dimmerLamp', payload);
+    },
+    setRgbLampData(state, payload) {
+      Vue.set(state, 'rgbLamp', payload);
+    },
+    setActiveItem(state, payload) {
+      Vue.set(state, 'activeItem', payload);
+    },
+    setValveData(state, payload) {
+      state.valve = payload
+    },
 
     saveLogic(state, payload) {
-      Vue.set(state, 'logic', payload);
+      // Vue.set(state, 'logic', payload);
+      state.logic = payload
       let floors = payload.elements[0].elements.filter(element => element.name == "area");
-      Vue.set(state, 'floors', floors);
+
+      state.floors = floors
+      // Vue.set(state, 'floors', floors);
       
       state.logicParsed = true;
     },
@@ -184,8 +241,8 @@ export default new Vuex.Store({
         
         return floor;
       });
-
-      Vue.set(state, 'floors', floors)
+      state.floors = floors
+      // Vue.set(state, 'floors', floors)
     },
     setAreasIds(state) {
       state.floors.forEach( (floor, floorIndex) => {
@@ -225,6 +282,7 @@ export default new Vuex.Store({
       })
     },
     createItemMap(state) {
+      const itemMap = {...state.itemMap}
       state.floors.forEach(floor => {
         let floorItems = floor.elements.filter(el => el.name == "item");
         
@@ -232,22 +290,19 @@ export default new Vuex.Store({
           if (!floorItem.__) { floorItem.__ = {}; }
           
           if (!state.itemMap[floorItem.attributes.addr]) {
-            state.itemMap[floorItem.attributes.addr] = floorItem;
+            itemMap[floorItem.attributes.addr] = floorItem;
           }
         })
         let floorRooms = floor.elements.filter(el => el.name == "area");
         floorRooms.forEach(room => {
           let roomItems = room.elements.filter(el => el.name == "item");
-
           roomItems.forEach(roomItem => {
             if (!roomItem.__) { roomItem.__ = {}; }
-
-            if (!state.itemMap[roomItem.attributes.addr]) {
-              state.itemMap[roomItem.attributes.addr] = roomItem;
-            }
+            itemMap[roomItem.attributes.addr] = roomItem;
           })
         })
       })
+      state.itemMap = {...itemMap}
     },
     // createItemMap(state) {
     //   let flatAreas = state.areas.area
@@ -438,13 +493,20 @@ export default new Vuex.Store({
   },
   actions: {
     loadLogicXML({dispatch}) {
-      axios.get('http://95.84.154.146:19580/MimiSetup/data/app.php/XmlEditor/getXml')
+      const settings = JSON.parse(localStorage.getItem('settings'));
+      const api = settings ? `${settings.network.remoteIp}:${settings.network.webPort}` : "95.84.154.146:15580" ;
+
+      return axios.get(`http://${api}/MimiSetup/data/app.php/XmlEditor/getXml`)
+      // axios.post(`http://${api}/logic/`)
         .then((response) => {
           localStorage.setItem('logic.xml', response.data)
           dispatch('parseAndSaveLogic', response.data);
+          return true
         })
         .catch( (error) => {
           console.log(error);
+          alert('Ошибка получения логики');
+          return false
         })
     },
     async parseAndSaveLogic({ state, commit, getters }, payload) {
@@ -479,46 +541,34 @@ export default new Vuex.Store({
           })
       }
     },
-    subscribeOnLogic() {
-      return this.dispatch('ws/sendMessage', { request: 'subscribeLogic' });
-    },
 
-    subscribeOnStatuses({ commit, dispatch }, payload) {
-      // console.log('SUBSCRIBE', payload);
-      if ((!payload.addr || !payload.addr.length) && !payload.reset) return;
-      
-      dispatch('ws/sendMessage', {
-				request: 'subscribeStatus',
-        addr: payload.addr ? payload.addr : [],
-				reset: Boolean(payload.reset)
-      });
-      
-      commit('saveSubscribedDevicesAddrs', payload);
-    },
-    resubscribeOnStatuses({ state, dispatch }) {
-      dispatch('ws/sendMessage', {
-        request: 'subscribeStatus',
-        addr: state.subscribedDevicesAddrs,
-        reset: true
-      });
+    subscribeOnStatuses() {},
+    resubscribeOnStatuses({ state }) {
+      console.log(state)
     },
     setStatus({ dispatch }, payload) {
-      let status = payload.status;
+      let { status, type } = payload;
+
+      if (type && type === 'leak') {
+        return dispatch ('ws/sendMessage', {
+          request: 'set-state',
+          addr: payload.addr,
+          state: status.toString(),
+          key: "1234567890123456"
+        })
+      }
 
       if (Array.isArray(status) || typeof status == 'number') {
         status = numberToByteString(status)
       } else if (typeof status != "string") {
-        console.log(status);
         throw "setStatus invalid payload status!";
       }
       if (!payload.addr || !payload.addr.length) {
         throw "setStatus invalid payload addr!";
       }
-
-      // TODO use real dynamic params for addr and state
       return dispatch ('ws/sendMessage', {
         request: 'set-state',
-        addr: "789:1",
+        addr: payload.addr,
         state: status,
         key: "1234567890123456"
       })

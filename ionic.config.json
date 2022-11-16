@@ -1,0 +1,7 @@
+{
+  "name": "mimismart",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}

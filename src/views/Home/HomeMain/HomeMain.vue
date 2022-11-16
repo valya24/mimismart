@@ -2,7 +2,7 @@
 	<div class="home">
 		<Header v-if="false">Мой дом</Header>
 		<!-- If less than 6 add class .just-cn -->
-		<div class="devices-by-category hbox alic">
+		<div class="devices-by-category hbox alic" :class="isIos ? 'ios-paddings' : ''">
 			<device-category-item
 				v-for="(group, key) in deviceGroups"
 				:key="key"
@@ -27,13 +27,19 @@
 import Header from "@/components/Header.vue";
 import DeviceCategoryItem from "@/components/DeviceCategoryItem";
 import FloorItem from "@/components/FloorItem";
+import {isPlatform} from "@ionic/vue";
 
 export default {
 	name: "HomeMain",
 	data() {
-		return {};
+		return {
+      isIos: null,
+    };
 	},
-	computed: {
+  created() {
+    this.isIos = isPlatform('ios')
+  },
+  computed: {
 		showSystem() {
 			return this.$store.state.modules.settings.interface.showSystem;
 		},
@@ -87,6 +93,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.ios-paddings {
+  padding: 40px 4px 16px;
+}
 .devices-by-category {
 	// iOS inertial scroll
 	overflow-x: scroll;

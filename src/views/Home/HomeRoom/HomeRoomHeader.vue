@@ -5,7 +5,7 @@
       {{ room.attributes.name }}
     </router-link>
 
-    <BtnIcon class="room-settings" icon="icon-tuning"
+    <BtnIcon class="room-settings" :class="isIos ? 'ios-style' : ''" icon="icon-tuning"
       @click.native="handleToggleSettings"/>
     
     
@@ -27,10 +27,12 @@ import Header from "@/components/Header.vue";
 import BtnIcon from "@/components/buttons/BtnIcon.vue";
 
 import DropdownList from "@/components/etc/DropdownList.vue";
+import {isPlatform} from "@ionic/vue";
 
 export default {
   data() {
     return {
+      isIos: null,
       showSettingsDropdown: false,
       // settingsMenuItems: [
       //   {
@@ -41,6 +43,9 @@ export default {
       //   }
       // ]
     }
+  },
+  created() {
+    this.isIos = isPlatform('ios')
   },
   computed: {
     floorId() {
@@ -114,6 +119,9 @@ export default {
 	position: absolute;
   right: 0;
   z-index: 2;
+}
+.ios-style {
+  margin-top: 32px;
 }
 .overlay {
 	background: red;

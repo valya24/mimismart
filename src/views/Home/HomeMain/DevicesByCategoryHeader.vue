@@ -40,7 +40,7 @@ export default {
   data() {
     return {
       pullRatio: 0.5,
-
+      elem: null,
 			pulling: false,
       startY: 0,
       startOffsetLeft: 0,
@@ -61,6 +61,9 @@ export default {
       containerEl: null,
       titleSpan: null
     }
+  },
+  mounted() {
+    this.elem = document.getElementById('header');
   },
   computed: {
     deviceGroups() {
@@ -121,7 +124,7 @@ export default {
     initPulling() {
       this.pulling = true;
       this.toggleScrolling();
-			this.$el.style.transition = '0s';
+      this.elem.style.transition = '0s';
       this.containerEl.style.transition = "0s";
       this.containerEl.style['overflow-x'] = "visible";
       this.titleSpan.style.transition = `0s`
@@ -181,7 +184,7 @@ export default {
         this.pulledHeight += dy * this.pullRatio;
       }
       this.containerEl.style.transform = `translateY(${this.pulledHeight + this.overpulledHeight}px)`;
-      this.$el.style.transform = `translateY(${this.pulledHeight + this.overpulledHeight}px)`;
+      this.elem.style.transform = `translateY(${this.pulledHeight + this.overpulledHeight}px)`;
       
       this.progress = (this.pulledHeight + this.overpulledHeight) / this.fixThreshold;
       if (this.progress > maxProgress) {
@@ -191,7 +194,7 @@ export default {
       let scale = 1 + this.progress * 1.4;
       // let transX = this.progress * (this.$el.offsetWidth - 28 - scale * this.startWidth) / 2;
       // let transX = this.progress * ((this.$el.offsetWidth - 2.4 * this.startWidth) / 2 - this.startOffsetLeft);
-      let transX = (this.progress < 1 ? this.progress : 1) * ( this.$el.offsetWidth - this.startOffsetLeft * 2 - this.startWidth * scale ) / 2;
+      let transX = (this.progress < 1 ? this.progress : 1) * ( this.elem.offsetWidth - this.startOffsetLeft * 2 - this.startWidth * scale ) / 2;
       if (transX < 0) transX = 0;
       let h = this.titleSpan.clientHeight * scale;
       let transY = -1 * this.progress * (this.pulledHeight - h) / 2;
@@ -202,7 +205,7 @@ export default {
 		handleTouchEnd() {
       this.containerEl.style.transition = ".25s";
       this.titleSpan.style.transition = ".25s";
-      this.$el.style.transition = ".25s";
+      this.elem.style.transition = ".25s";
       this.pulling = false;
       this.toggleScrolling();
       this.startY = 0;
@@ -217,11 +220,11 @@ export default {
       ) {
         this.pulledHeight = this.fixThreshold;
         this.containerEl.style.transform = `translateY(${this.pulledHeight}px)`;
-        this.$el.style.transform = `translateY(${this.pulledHeight}px)`;
+        this.elem.style.transform = `translateY(${this.pulledHeight}px)`;
 
         this.progress = 1;
         let scale = 1 + this.progress * 1.4;
-        let transX = this.progress * ((this.$el.offsetWidth - scale * this.startWidth) / 2 - this.startOffsetLeft);
+        let transX = this.progress * ((this.elem.offsetWidth - scale * this.startWidth) / 2 - this.startOffsetLeft);
         if (transX < 0) transX = 0;
         let h = this.titleSpan.clientHeight * scale;
         let transY = -1 * this.progress * (this.fixThreshold - this.overpulledHeight*0.7 - h) / 2;
@@ -230,11 +233,11 @@ export default {
         // this.titleSpan.style['letter-spacing'] = `${-0.05 * this.progress}em`;
       } else {
         this.pulledHeight = 0;
-        this.containerEl.style.transform = `none`;
-        this.$el.style.transition = ".25s";
-        this.$el.style.transform = `none`;
+        // this.containerEl.style.transform = `none`;
+        this.elem.style.transition = ".25s";
+        // this.elem.style.transform = `none`;
         this.titleSpan.style.transition = ".25s"
-        this.titleSpan.style.transform = `none`
+        // this.titleSpan.style.transform = `none`
       }
 			
     },
@@ -243,28 +246,28 @@ export default {
     },
 
     init() {
-      this.routeContainers = this.$router.currentRoute.matched.map( route => route.instances.default.$el );
+      // this.routeContainers = this.$router.currentRoute.matched.map( route => route.instances.default.$el );
 
       this.containerEl = this.routeContainers[this.routeContainers.length - 1];
 
-      this.containerEl.addEventListener('touchstart', this.handleTouchStart);
-      this.containerEl.addEventListener('touchmove', this.handleTouchMove);
-      this.containerEl.addEventListener('touchend', this.handleTouchEnd);
+      // this.containerEl.addEventListener('touchstart', this.handleTouchStart);
+      // this.containerEl.addEventListener('touchmove', this.handleTouchMove);
+      // this.containerEl.addEventListener('touchend', this.handleTouchEnd);
 
       document.addEventListener('scroll', this.handleScroll);
     },
     destroyDynamicHeaderProcessing() {
 
-      this.containerEl.removeEventListener('touchstart', this.handleTouchStart);
-      this.containerEl.removeEventListener('touchmove', this.handleTouchMove);
-      this.containerEl.removeEventListener('touchend', this.handleTouchEnd);
+      // this.containerEl.removeEventListener('touchstart', this.handleTouchStart);
+      // this.containerEl.removeEventListener('touchmove', this.handleTouchMove);
+      // this.containerEl.removeEventListener('touchend', this.handleTouchEnd);
 
       document.removeEventListener('scroll', this.handleScroll);
 
       this.routeContainers.forEach( cont => {
         cont.removeAttribute('style');
       })
-      this.$el.removeAttribute('style');
+      this.elem.removeAttribute('style');
     }
   },
   beforeRouteEnter(to, from, next) {

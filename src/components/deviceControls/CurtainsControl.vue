@@ -1,25 +1,33 @@
 <template>
 	<div class="curtains-control controls-body on">
 		<div class="big-icon-control">
-			<icon-comp :iconName="`icon-${icon}`" :value="status" />
+			<icon-comp :iconName="`icon-${icon}`" :value="+jalousie.isActive.charAt(1)" />
 			<transition name="fade" mode="out-in">
 				<div class="status" :key="statusMessage[status]" >
-					{{ statusMessage[status] }}
+					{{ statusMessage[+jalousie.isActive.charAt(1)] }}
 				</div>
 			</transition>
 			<div class="open-close hbox alic">
 				<transition name="fade" mode="out-in">
 					<div class="button-bar"
-						v-if="status != JALOUSIE_CLOSING && status != JALOUSIE_OPENING">
+						v-if="jalousie.isActive === '04'">
 						<Button :label="$t('Open_1')"
-							@click.native="$emit('change', 1)" />
+							@click.native="$emit('change', '01')" />
 						<Button :label="$t('Close')"
-							@click.native="$emit('change', 0)" />
+							@click.native="$emit('change', '00')" />
 					</div>
+          <div class="button-bar" v-else-if="jalousie.isActive === '00'">
+            <Button :label="$t('Open_1')"
+                    @click.native="$emit('change', '01')" />
+          </div>
+          <div class="button-bar" v-else-if="jalousie.isActive === '01'">
+            <Button :label="$t('Close')"
+                    @click.native="$emit('change', '00')" />
+          </div>
 
 					<Button :label="$t('Stop')"
 						v-else
-						@click.native="$emit('change', 255)" />
+						@click.native="$emit('change', '00')" />
 				</transition>
 			</div>
 		</div>
@@ -30,10 +38,12 @@
 import Button from '@/components/buttons/Button'
 
 import { JALOUSIE_STATES } from '@/utils/consts/consts.js';
+import {mapGetters} from "vuex";
 
 export default {
 	props: {
 		status: Number,
+    addr: String,
 		icon: {
 			type: String,
 			default: 'curtains'
@@ -44,7 +54,20 @@ export default {
 			...JALOUSIE_STATES
 		}
 	},
+  watch: {
+    sensorDevice: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (this.addr === val.addr) {
+          this.$store.commit('setJalousieData', {isActive: val.status, addr: this.addr});
+        }
+      }
+    }
+  },
 	computed: {
+    ...mapGetters(['jalousie']),
+    ...mapGetters('ws', ['sensorDevice']),
 		statusMessage() {
 			return {
 				[JALOUSIE_STATES.JALOUSIE_CLOSED]: this.$t('Closed'),
@@ -65,6 +88,13 @@ export default {
 .big-icon-control {
 	height: auto;
 }
+
+.theme-dark {
+  .status {
+    color: @colorGrayedOutLighter;
+  }
+}
+
 .status {
 	color: rgba(0,0,0,0.5);
 	margin-bottom: 24px;

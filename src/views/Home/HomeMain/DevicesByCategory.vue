@@ -17,6 +17,7 @@
 				>
 					<LocationItem v-for="(room, i) in getRooms(catKey)" :key="i"
 						:title="room.attributes.name"
+            :idRoom="room.__.id"
 						:items="filterIcons(filterRoomItems(getRoomItems(room.__.id), catKey))"
 						:widgets="filterWidgets(filterRoomItems(getRoomItems(room.__.id), catKey))"
 						:toggleTitle="getToggleButtonTitle(catKey)"
@@ -68,6 +69,7 @@ import { hsvToHex } from "@/utils/transformers.js";
 import Swiper from 'swiper';
 
 import SwipeHomeScreen from "@/components/etc/SwipeHomeScreen.vue";
+import {mapActions} from "vuex";
 
 export default {
 	data() {
@@ -139,6 +141,7 @@ export default {
 		}
 	},
 	methods: {
+    ...mapActions('modules/settings', ['stopSubscribeRequest']),
 		// getRooms(category) {
 		// 	return this.areas
 		// 		.reduce( (accum, item) => item.$.system == 'yes' ? accum : accum.concat(item.area), [])
@@ -275,6 +278,7 @@ export default {
 				autoHeight: true,
 				setWrapperSize: true,
 				resistanceRatio: 0.94,
+        speed: 1000,
 				on: {
 					init: function() {
 						// console.log(this.activeIndex);
@@ -350,6 +354,19 @@ export default {
 			this.initSlider();
 		},
 	},
+  watch: {
+    '$route': {
+      deep: true,
+      handler() {
+        const key = this.$route.params.category;
+        const room = this.getRooms(key).map(room => room);
+
+        const elems = room.map(elem => elem.elements)
+        const addrs = elems.map(elem => elem.map(el => el.attributes.addr))
+        this.stopSubscribeRequest(addrs[0].filter(item => item))
+      }
+    }
+  },
 	mounted() {
 		this.initSlider();
 	},
@@ -442,19 +459,19 @@ export default {
 		z-index: 3;
 		background-color: @colorBg;
 		min-height: 50vh;
-		&::after {
-			content: '';
-			position: absolute;
-			z-index: 10;
-			top: 0;
-			left: 100%;
-			// right: 0;
-			display: block;
-			height: 100%;
-			min-height: 100%;
-			width: 100vw;
-			background: @colorBg;
-		}
+		//&::after {
+		//	content: '';
+		//	position: absolute;
+		//	z-index: 10;
+		//	top: 0;
+		//	left: 100%;
+		//	// right: 0;
+		//	display: block;
+		//	height: 100%;
+		//	min-height: 100%;
+		//	width: 100vw;
+		//	background: @colorBg;
+		//}
 	}
 	.swiper-slide {
 		width: 100%;

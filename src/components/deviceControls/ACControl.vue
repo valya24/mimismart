@@ -1,61 +1,66 @@
 <template>
-	<div class="modal-ac controls-body" :class="{ 'on': active, '--disabled': !active }">
+	<div class="modal-ac controls-body" :class="{ 'on': +conditioner.isActive, '--disabled': !+conditioner.isActive }">
 		<div class="main-switch tablets-only"
-			@click="$emit('toggle', !active)">
-			<div class="label">{{ active ? $t('On_1') : $t('Off_1') }}</div>
-			<app-switch :checked="active" />
+			@click="handleToggle">
+			<div class="label">{{ +conditioner.isActive ? $t('On_1') : $t('Off_1') }}</div>
+			<app-switch :checked="+conditioner.isActive" />
 		</div>
 		<div class="main-controls">
 			<div class="buttons-col right">
-				<BtnIcon icon="icon-plus" class="rounded"
-					@touchstart.native="handleBtnTouchStart(1)"
-					@touchend.native="handleBtnTouchEnd"
-					@contextmenu.native.prevent.capture=""
-				/>
+        <BtnIcon icon="icon-plus" class="rounded"
+                 :disabled="+conditioner.isActive"
+                 @touchstart.native="handleBtnTouchStart(1)"
+                 @touchend.native="handleBtnTouchEnd"
+                 @contextmenu.native.prevent.capture=""
+        />
 
 				<span class="stepper-title tablets-only">{{ $t('Temperature') }}</span>
 
-				<BtnIcon icon="icon-minus" class="rounded"
-					@touchstart.native="handleBtnTouchStart(-1)"
-					@touchend.native="handleBtnTouchEnd"
-					@contextmenu.native.prevent.capture=""
-				/>
+        <BtnIcon icon="icon-minus" class="rounded"
+                 :disabled="+conditioner.isActive"
+                 @touchstart.native="handleBtnTouchStart(-1)"
+                 @touchend.native="handleBtnTouchEnd"
+                 @contextmenu.native.prevent.capture=""
+        />
 			</div>
-			<div class="buttons-col left">
+			<div class="buttons-col left" v-if="vaneHorModes && vaneHorModes.length">
 				<BtnIcon icon="icon-swing-horiz" class="rounded"
-					v-if="vaneHorModes && vaneHorModes.length"
-					:value="vaneHor" @click.native="handleVaneHorCycle" />
+          :disabled="+conditioner.isActive"
+					:value="+conditioner.vaneHorMode" @click.native="handleVaneHorCycle" />
 
 				<span class="stepper-title tablets-only">{{ $t('Lamels') }}</span>
 
 				<BtnIcon icon="icon-swing" class="rounded"
 					v-if="vaneVerModes && vaneVerModes.length"
-					:value="vaneVer" @click.native="handleVaneVerCycle" />
+          :disabled="+conditioner.isActive"
+					:value="+conditioner.vaneVerMode" @click.native="handleVaneVerCycle" />
 			</div>
+      <div v-else class="buttons-col left"></div>
 			<div class="buttons-col power-stepper tablets-only">
 				<BtnIcon icon="icon-back" class="rounded" @click.native="cyclePowerlevelsDec" />
 
 				<span class="stepper-title tablets-only">
 					{{ $t('Power level') }}
-					<span class="value">{{ activePowerName }}</span>
+					<span class="value">{{ selectedPowerLevel }}</span>
 				</span>
 
 				<BtnIcon icon="icon-back" class="rounded flip-x" @click.native="cyclePowerlevels" />
 			</div>
 
-			<Knob :disabled="!active"
+			<Knob :disabled="!+conditioner.isActive"
 				:min="minTemp" :max="maxTemp"
-				:value="currTemp" :secondValue="roomTemp"
+				:value="conditioner.temp" :secondValue="roomTemp"
 				@change="handleKnobChange">
 				<div class="indicators hbox alic">
-					<BtnIcon :icon="'icon-' + activeModeIcon" @click.native="cycleModes" />
-					
-					<BtnIcon icon="icon-powerlevel" :value="powerlevel" @click.native="cyclePowerlevels" />
+					<BtnIcon v-if="modes.length" :icon="'icon-' + activeModeIcon" @click.native="cycleModes" />
+
+					<BtnIcon v-if="modes.length" icon="icon-powerlevel" :value="+conditioner.powerLevel" @click.native="cyclePowerlevels" />
+					<BtnIcon v-else icon="icon-powerlevel" :value="2" @click.native="cyclePowerlevels" />
 				</div>
 				<div class="temp-info">
 					<transition name="counter" mode="out-in">
-						<div class="active-temp" :key="Math.round(currTemp)">
-							{{ Math.round(currTemp) }}&deg;
+						<div class="active-temp" :key="Math.round(conditioner)">
+							{{ conditioner ? Math.round(conditioner.temp) : '--' }} <span v-html="tempDim"></span>
 						</div>
 					</transition>
 
@@ -67,7 +72,7 @@
 			</Knob>
 		</div>
 		<div class="device-status"
-			:class="{ '--hidden': !active }">
+			:class="{ '--hidden': !+conditioner.isActive }">
 			<div class="device-status-title">
 				{{ statusMessage }}
 			</div>
@@ -75,7 +80,7 @@
 		<div class="mode-selector tablets-only">
 			<div class="mode-item"
 				v-for="mode in modes" :key="mode.key"
-				:class="{ '--active': activeModeName == mode.name }"
+				:class="{ '--active': conditioner.mode === mode.key }"
 				@click="selectMode(mode.key)"
 			>
 				<div class="mode-icon">
@@ -85,10 +90,10 @@
 			</div>
 		</div>
 		<div class="controls-footer hbox just-sb tablets-hide">
-			<div class="col-mode">
+			<div v-if="modes.length" class="col-mode">
 				<div class="label">{{ $t('Mode') }}</div>
 
-				<ModeSelectDropdown :class="{ 'on': active }"
+				<ModeSelectDropdown :class="{ 'on': +conditioner.isActive }"
 					:modes="modes"
 					:activeMode="activeModeName"
 					:valueKey="'name'"
@@ -99,9 +104,9 @@
 			</div>
 
 			<div class="col-switch vbox alic"
-				@click="$emit('toggle', !active)">
-				<div class="label">{{ active ? $t('On_1') : $t('Off_1') }}</div>
-				<app-switch :checked="active" />
+				@click="handleToggle">
+        <div class="label">{{ +conditioner.isActive ? $t('On_1') : $t('Off_1') }}</div>
+        <app-switch :checked="+conditioner.isActive" />
 			</div>
 
 			<div class="col-powerlevel">
@@ -125,10 +130,12 @@
 import BtnIcon from "@/components/buttons/BtnIcon";
 import Switch from "@/components/controls/Switch";
 import Knob from "@/components/controls/Knob";
+import { hexToDecimal, replaceAt } from "@/utils/transformers.js";
 
 import { debounce } from "@/utils/functions.js";
 
 import ModeSelectDropdown from "@/components/etc/ModeSelectDropdown"
+import {mapActions, mapGetters} from "vuex";
 
 const holdDelay = 500;
 const holdInterval = 350;
@@ -136,6 +143,10 @@ const holdInterval = 350;
 export default {
 	props: {
 		active: Boolean,
+    addr: String,
+    configData: {
+      type: Object
+    },
 		minTemp: {
 			type: Number,
 			default: 16
@@ -190,12 +201,24 @@ export default {
 			currTemp: this.temperature,
 			currPowerlevel: 0,
 			currMode: 0,
+      roomId: null
 		}
 	},
-	computed: {
+  mounted() {
+    this.roomId = this.$route.params.id
+  },
+  computed: {
+    ...mapGetters(['conditioner']),
+    ...mapGetters('ws', ['sensorDevice']),
 		activeModeItem() {
-			return this.modes.find( item => item.key == this.mode );
+			return this.modes.find( (item, i) => i === this.conditionerMode );
 		},
+    tempDim () {
+      return this.configData.attributes.dim ? `<span>%</span>` : `<span>&deg</span>`;
+    },
+    selectedPowerLevel () {
+      return this.powerlevels[+this.conditioner.powerLevel]?.name
+    },
 		activeModeName() {
 			return this.activeModeItem ? this.activeModeItem.name : this.mode;
 		},
@@ -203,33 +226,60 @@ export default {
 			return this.activeModeItem ? this.activeModeItem.icon : 'close';
 		},
 		activePowerName() {
-			let item = this.powerlevels.find( item => item.key == this.powerlevel );
-			return item ? item.name : this.powerlevel;
+			let item = this.powerlevels.find( item => item.key == +this.conditioner.powerLevel );
+			return item ? item.name : this.conditionerMode;
 		},
+    conditionerMode() {
+      return this.modes.length === 1 ? 0 : +this.conditioner.mode
+    },
 
 		statusMessage() {
-			switch (this.activeModeItem.key) {
-				case 0:
-					return this.$t('Ventilation');
-				case 2:
-					return this.$t('Drying');
-				case 1:
-					return (this.roomTemp > this.currTemp) ? this.$t('Cooling') : this.$t('Ventilation');
-				case 3:
-					return (this.roomTemp < this.currTemp) ? this.$t("Heating") : this.$t('Ventilation');
-				case 4:
-					if (this.roomTemp < this.currTemp) {
-						return this.$t("Heating");
-					} else if (this.roomTemp > this.currTemp) {
-						return this.$t('Cooling')
-					} else {
-						return this.$t('Ventilation')
-					}
-				default: return this.$t('Ventilation');
-			}
+      if (this.activeModeItem) {
+        switch (this.activeModeItem.name) {
+          case this.$t("Cool"):
+            return this.$t('Cooling');
+          case this.$t("Dry"):
+            return this.$t('Drying');
+          case this.$t("Heat"):
+            return this.$t('Heating');
+          case this.$t("Auto"):
+            return this.$t("Ventilation");
+          case 4:
+            if (this.roomTemp < +this.conditioner.temp) {
+              return this.$t("Heating");
+            } else if (this.roomTemp > +this.conditioner.temp) {
+              return this.$t('Cooling')
+            } else {
+              return this.$t('Ventilation')
+            }
+          default: return this.$t('Ventilation');
+        }
+      } else if (!this.modes.length) {
+        return +this.conditioner.isActive ? this.$t('On_1') : this.$t('Off_1')
+      }else {
+        return this.$t('Ventilation')
+      }
+
 		}
 	},
 	watch: {
+    sensorDevice: {
+      deep: true,
+      handler(val) {
+        if (val.addr !== this.addr) return
+        const temp = hexToDecimal(val.status, 'conditioner')
+        const conditionerData = {
+          temp,
+          state: val.status,
+          isActive: val.status.charAt(1),
+          mode: val.status.charAt(0),
+          powerLevel: val.status.charAt(9),
+          vaneHorMode: val.status.charAt(7),
+          vaneVerMode: val.status.charAt(6)
+        }
+        this.$store.commit('setConditionerData', conditionerData)
+      }
+    },
 		temperature(newVal) {
 			if (Math.abs(this.currTemp - newVal) > 0.5) {
 				this.currTemp = newVal;
@@ -243,24 +293,55 @@ export default {
 		}, 300),
 	},
 	methods: {
+    ...mapActions('modules/settings', ['subscribeRequest']),
 		handleKnobChange(value) {
-			this.currTemp = value;
+      if (!+this.conditioner.isActive) return
+      const dec = Math.abs(value.toFixed()).toString(16);
+
+      const str = this.conditioner.state.split('')
+
+      str[2] = dec[0]
+      str[3] = dec[1]
+      this.$emit('changeMode', str.join(""));
+			this.conditioner.temp = value;
 		},
 		incrementTemp() {
-			if (this.currTemp + 1 <= this.maxTemp) {
-				return this.currTemp += 1;
-			} else {
-				return this.currTemp = this.maxTemp;
-			}
+      let temp
+      if (this.conditioner.temp + 1 <= this.maxTemp) {
+        let inc = +this.conditioner.temp
+        temp = inc += 1;
+        const dec = Math.abs(temp.toFixed()).toString(16);
+
+        const str = this.conditioner.state.split('')
+
+        str[2] = dec[0]
+        str[3] = dec[1]
+        this.$emit('changeMode', str.join(""));
+        return temp
+      } else {
+        temp = this.conditioner.temp = this.maxTemp
+        return temp;
+      }
 		},
 		decrementTemp() {
-			if (this.currTemp - 1 >= this.minTemp) {
-				return this.currTemp -= 1;
-			} else {
-				return this.currTemp = this.minTemp;
-			}
+      let temp
+      if (this.conditioner.temp - 1 >= this.minTemp) {
+        temp = this.conditioner.temp -= 1
+        const dec = Math.abs(+temp.toFixed()).toString(16);
+
+        const str = this.conditioner.state.split('')
+
+        str[2] = dec[0]
+        str[3] = dec[1]
+        this.$emit('changeMode',str.join(""));
+        return temp;
+      } else {
+        temp = this.conditioner.temp = this.minTemp
+        return temp;
+      }
 		},
 		handleBtnTouchStart(val) {
+      if (!+this.conditioner.isActive) return
 			if (val > 0) {
 				this.incrementTemp();
 			} else {
@@ -284,43 +365,58 @@ export default {
 			this.interval = null;
 		},
 
-		selectMode(mode) {
-			if (!this.modes || this.modes.length <= 1) return false;
+    async handleToggle() {
+      let isActive = +this.conditioner.isActive ? '0' : '1'
+      const active = replaceAt(this.conditioner.state, 1, isActive)
 
-			this.$emit('changeMode', mode);
+      this.$emit('toggle', active)
+      const addrs = this.$store.getters.getRoomItems(this.roomId);
+      await this.subscribeRequest(addrs.map(addr => addr.attributes.addr))
+    },
+
+		selectMode(mode) {
+			if (!+this.conditioner.isActive) return false;
+      const removed = this.conditioner.state.slice(1);
+      this.$emit('changeMode',`${mode}${removed}`);
 		},
 		cycleModes() {
-			if (!this.modes || this.modes.length <= 1) return false;
+      if (!+this.conditioner.isActive) return false;
 
 			let index = this.modes.map( item => item.key ).indexOf(this.mode);
 			let nextMode = this.modes[(index + 1) % this.modes.length].key;
-			this.$emit('changeMode', nextMode);
+      const removed = this.conditioner.state.slice(1);
+      this.$emit('changeMode',`${nextMode}${removed}`);
 		},
 		selectPowerlevel(powerlevel) {
-			if (!this.powerlevels || this.powerlevels.length <= 1) return false;
-			this.$emit('changePower', powerlevel);
+      if (!+this.conditioner.isActive) return;
+      const status = this.conditioner.state.split('')
+      status[9] = powerlevel
+			this.$emit('changePower', status.join(''));
 		},
 		cyclePowerlevels() {
-			if (!this.powerlevels || this.powerlevels.length <= 1) return false;
+      if (!+this.conditioner.isActive) return;
 
-			let index = this.powerlevels.map( item => item.key ).indexOf(this.powerlevel);
-			let nextPower = this.powerlevels[(index + 1) % this.powerlevels.length].key;
-			this.$emit('changePower', nextPower );
+      const status = this.conditioner.state.split('')
+      status[9] = +this.conditioner.state.charAt(9) - 1
+
+			this.$emit('changePower', status.join('') );
 		},
 		cyclePowerlevelsDec() {
-			if (!this.powerlevels || this.powerlevels.length <= 1) return false;
+      if (!+this.conditioner.isActive) return;
 
-			let index = this.powerlevels.map( item => item.key ).indexOf(this.powerlevel);
-			let newIdx = index > 0 ? (index - 1) : this.powerlevels.length - 1;
-			let nextPower = this.powerlevels[newIdx].key;
-			this.$emit('changePower', nextPower );
+			const status = this.conditioner.state.split('')
+      status[9] = +this.conditioner.state.charAt(9) + 1
+
+			this.$emit('changePower', status.join('') );
 		},
 
 		handleVaneHorCycle() {
-			this.$emit('cycleVaneHor');
+      if (!+this.conditioner.isActive) return
+			this.$emit('cycleVaneHor', this.conditioner.state);
 		},
 		handleVaneVerCycle() {
-			this.$emit('cycleVaneVer');
+      if (!+this.conditioner.isActive) return
+			this.$emit('cycleVaneVer', this.conditioner.state);
 		},
 	},
 	components: {

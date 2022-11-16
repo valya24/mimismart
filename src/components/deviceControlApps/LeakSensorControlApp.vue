@@ -19,6 +19,7 @@ import LeakSensorControl from "@/components/deviceControls/LeakSensorControl";
 // import ModalDeviceControlStats from "@/components/modals/ModalDeviceControlStats";
 
 import { numberToByteString } from "@/utils/transformers.js";
+import {mapActions} from "vuex";
 
 export default {
   props: {
@@ -29,6 +30,12 @@ export default {
     name: String,
     addr: String,
     // status: Array
+  },
+  data: () => ({
+    roomId: null
+  }),
+  mounted() {
+    this.roomId = this.$route.params.id
   },
   computed: {
     tabs() {
@@ -61,13 +68,20 @@ export default {
     }
   },
   methods: {
+    ...mapActions('modules/settings', ['subscribeRequest']),
     handleIgnore(seconds) {
-      let num = numberToByteString(seconds).substring(2).padStart(4, '0');
-      
-      this.$store.dispatch('setStatus', {
-        addr: this.addr,
-				status: `0x${num}`
-      })
+      const hexToDecimal = hex => parseInt(hex, 16);
+
+      setTimeout(() => {
+        this.$store.dispatch('setStatus', {
+          addr: this.addr,
+          status: hexToDecimal(seconds),
+          type: 'leak'
+        });
+
+        const addrs = this.$store.getters.getRoomItems(this.roomId);
+        this.subscribeRequest(addrs.map(addr => addr.attributes.addr))
+      }, 10000);
     },
     handleReset() {
       this.$store.dispatch('setStatus', {

@@ -8,6 +8,7 @@
       @change="handleColorChange"
       @brightness="handleBrightnessChange"
       @toggle="handleToggle"
+      :addr="addr"
       :active="isActive"
       :color="color" />
     <!-- <ModalDeviceControlStats :slot="tabs[1]" /> -->

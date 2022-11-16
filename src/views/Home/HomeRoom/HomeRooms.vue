@@ -19,8 +19,7 @@
 				:key="i"
 				:icon="'icon-' + sensor.attributes.type.split('-sensor')[0]"
 			>
-				{{ (isNaN(sensorDeviceInterfaces[sensor.attributes.type].value(sensor.__.status)) ? '--' : sensorDeviceInterfaces[sensor.attributes.type].value(sensor.__.status)) +
-				sensorDeviceInterfaces[sensor.attributes.type].unitsLong }}
+        <sensor-device :addr="sensor.attributes.addr" :sensor="sensor" :unit="sensorDeviceInterfaces[sensor.attributes.type].unitsLong"/>
 			</RoomSensor>
 		</div>
 
@@ -36,7 +35,7 @@
 
 				<div class="swiper-slide room" v-for="room in rooms" :key="room.__.id" ref="roomSlides">
 					<!-- If cam is available put image from cam -->
-					<div class="room-picture">
+					<div class="room-picture" :class="isIos ? 'ios-style' : ''">
 						<img :src="room.attributes.image ? room.attributes.image : defaultRoomPic" alt />
 
 						<div class="room-sensors --white" ref="roomSensors">
@@ -45,8 +44,7 @@
 								:key="i"
 								:icon="'icon-' + sensor.attributes.type.split('-sensor')[0]"
 							>
-								{{ (isNaN(sensorDeviceInterfaces[sensor.attributes.type].value(sensor.__.status)) ? '--' : sensorDeviceInterfaces[sensor.attributes.type].value(sensor.__.status)) +
-								sensorDeviceInterfaces[sensor.attributes.type].unitsLong }}
+                <sensor-device :addr="sensor.attributes.addr" :sensor="sensor" :unit="sensorDeviceInterfaces[sensor.attributes.type].unitsLong"/>
 							</RoomSensor>
 						</div>
 					</div>
@@ -104,6 +102,7 @@
 
 <script>
 import Swiper from "swiper";
+import {isPlatform} from "@ionic/vue";
 
 // import HomeRoomHeader from '@/views/Home/HomeRoom/HomeRoomHeader.vue';
 import Header from "@/components/Header.vue";
@@ -121,6 +120,8 @@ const allowedTypes = ["temperature", "illumination", "humidity", "motion"];
 
 import ModalDeviceSettings from "@/components/modals/ModalDeviceSettings";
 import ModalInputPassword from "@/components/modals/ModalInputPassword";
+import {mapActions} from "vuex";
+import SensorDevice from "@/views/Home/HomeRoom/SensorDevice";
 
 
 // function stickySensorsHandler (e, vm) {
@@ -130,6 +131,7 @@ import ModalInputPassword from "@/components/modals/ModalInputPassword";
 export default {
 	data() {
 		return {
+      isIos: null,
 			activeRoomIndex: 0,
 			slider: null,
 			// roomPic:
@@ -139,12 +141,31 @@ export default {
 			sensorDeviceInterfaces,
 			pulledWidth: 0,
 			readyToRelease: false,
-
+      roomId: null,
 			roomSensorsSticky: false,
 			roomInitSensorsOffset: -1
 		};
 	},
-	computed: {
+  created() {
+    this.isIos = isPlatform('ios')
+  },
+  mounted() {
+    this.$nextTick(function() {
+      this.updateSlider();
+      let index = this.getRoomIndex(this.$route.params.id);
+      this.slider.slideTo(index);
+    })
+    // window.onscroll = () => {
+    //   this.stickySensorsHandler()
+    //
+    //   if (this.rooms.length === this.getRoomIndex(this.$route.params.id) + 1) return
+    //   this.checkScrollBottom()
+    // }
+  },
+  destroyed() {
+    window.removeEventListener('scroll', () => {});
+  },
+  computed: {
 		activePopup() {
 			return this.$store.state.modules.popups.activePopup;
 		},
@@ -186,6 +207,30 @@ export default {
 		},
 	},
 	watch: {
+    // activeItem: {
+    //   deep: true,
+    //   handler(val) {
+    //     this.handleCallControlApp(val)
+    //   }
+    // },
+    '$route': {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        // this.$nextTick(function() {
+        //   this.updateSlider();
+        //   let index = this.getRoomIndex(this.$route.params.id);
+        //   this.slider.slideTo(index);
+        // })
+
+        const icons = this.getSortedIcons(val.params.id)
+        const addrs = icons.map(icon => icon.attributes.addr)
+        this.$store.commit('setCurrentRoomAddrs', addrs.filter(item => item && item))
+        this.subscribeRequest(addrs.filter(item => item && item))
+        // this.getAllDevices()
+      }
+
+    },
 		currentRoomData(newVal) {
 			this.unsubscribeFromAll();
 			this.subscribeOnAllStatuses();
@@ -199,7 +244,6 @@ export default {
 				let index = this.getRoomIndex(this.$route.params.id);
 				this.slider.slideTo(index);
 			})
-			console.log('sadad')
 		},
 		currentSlideEl(newVal, oldVal) {
 			let offset = newVal.querySelector('.room-sensors').offsetTop;
@@ -214,8 +258,19 @@ export default {
 		}
 	},
 	methods: {
-		stickySensorsHandler(e) {
-			if (e.target.scrollTop >= this.roomInitSensorsOffset) {
+    ...mapActions('modules/settings', ['subscribeRequest', 'getAllDevices']),
+    checkScrollBottom() {
+      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+        this.$nextTick(function() {
+          this.updateSlider();
+          let index = this.getRoomIndex(this.$route.params.id);
+          this.slider.slideTo(index + 1);
+        });
+        document.body.scrollTop = document.documentElement.scrollTop = 0;
+      }
+    },
+		stickySensorsHandler() {
+			if (window.innerHeight - this.roomInitSensorsOffset >= this.roomInitSensorsOffset) {
 				this.$refs.roomSensorsFixed.classList.remove('--hidden');
 				this.$refs.roomSensors.forEach( item => item.classList.add('--hidden') );
 				// this.roomSensorsSticky = true;
@@ -264,6 +319,7 @@ export default {
 				.filter( item => item.attributes.widget == "yes" );
 		},
 		getSortedIcons(roomId) {
+      this.roomId = roomId
 			return this.getSortedRoomItems(roomId)
 				.filter( item => item.attributes.widget != "yes" );
 		},
@@ -303,8 +359,11 @@ export default {
 
 			this.slider = new Swiper(this.$refs.swiperContainer, {
 				resistanceRatio: 0.94,
+        speed: 800,
+        effect: "cards",
+        grabCursor: true,
 				setWrapperSize: true,
-				initialSlide: vm.getRoomIndex(vm.$route.params.id),
+				// initialSlide: vm.getRoomIndex(vm.$route.params.id),
 				updateOnWindowResize: true,
 				on: {
 					init: function() {
@@ -446,6 +505,7 @@ export default {
 		});
 	},
 	components: {
+    SensorDevice,
 		Header,
 		RoomSensor,
 		ControlAppManager,
@@ -482,9 +542,10 @@ export default {
 	position: relative;
 	height: 100%;
 	max-height: calc(100vh - 46px);
-
+  overflow: unset!important;
+  overflow-x: hidden;
 	// background-color: #f22;
-	background: #e1e6ed;
+	//background: #e1e6ed;
 	transition: 0.25s;
 	.swiper-slide {
 		overflow-x: hidden;
@@ -492,29 +553,29 @@ export default {
 		z-index: 7;
 		min-height: calc(100vh - 46px);
 		max-height: calc(100vh - 46px);
-		// padding-bottom: 72px + 48px;
+		padding-bottom: 72px + 48px;
 		background-color: @colorBg;
 
 		// iOS inertial scroll
-		overflow-y: scroll;
-		-webkit-overflow-scrolling: touch;
+		//overflow-y: scroll;
+		//-webkit-overflow-scrolling: touch;
 	}
 	.swiper-wrapper {
 		position: relative;
 		z-index: 3;
-		&::after {
-			content: "";
-			position: absolute;
-			z-index: 10;
-			top: 0;
-			left: 100%;
-			// right: 0;
-			display: block;
-			height: 100%;
-			min-height: 100%;
-			width: 100vw;
-			background: #e1e6ed;
-		}
+		//&::after {
+		//	content: "";
+		//	position: absolute;
+		//	z-index: 10;
+		//	top: 0;
+		//	left: 100%;
+		//	// right: 0;
+		//	display: block;
+		//	height: 100%;
+		//	min-height: 100%;
+		//	width: 100vw;
+		//	background: #e1e6ed;
+		//}
 	}
 	.swipe-home-screen {
 		position: absolute;
@@ -564,6 +625,9 @@ export default {
 		height: auto;
 		width: 100%;
 	}
+}
+.ios-style {
+  top: 30px;
 }
 .room-sensors {
 	// position: sticky;

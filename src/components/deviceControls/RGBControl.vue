@@ -1,7 +1,7 @@
 <template>
   <div class="rgb-control controls-body">
     <div class="rgb-control-main">
-      <div class="rgb-control-colors" :class="{ '--disabled': !active }">
+      <div class="rgb-control-colors" :class="{ '--disabled': !+rgbLamp.active !== '00' }">
         <div class="rgb-control-colors-item"
           v-for="color in colors" :key="color"
           :style="{ 'background-color': color }"
@@ -11,22 +11,22 @@
 
       <div ref="picker"
         class="rgb-control-color-picker"
-        :class="{ '--disabled': !active }"
+        :class="{ '--disabled': +rgbLamp.active !== '00' }"
         ></div>
 
       <Brightness direction="vertical"
         :min="1" :max="250"
         :value="brightness"
-        :disabled="!active"
+        :disabled="!+rgbLamp.active"
         @change="handleBrightnessChange"/>
     </div>
     
 
     <div class="controls-footer hbox just-cn">
 			<div class="col-switch vbox alic"
-        @click="$emit('toggle', !active)">
-				<div class="label">{{ active ? $t('On_1') : $t('Off_1') }}</div>
-				<app-switch :checked="active" />
+        @click="handleToggle">
+				<div class="label">{{ +rgbLamp.active ? $t('On_1') : $t('Off_1') }}</div>
+				<app-switch :checked="+rgbLamp.active" />
 			</div>
 		</div>
 
@@ -40,16 +40,20 @@ import Switch from "@/components/controls/Switch";
 import Brightness from "@/components/controls/Brightness";
 
 import { debounce } from '@/utils/functions.js';
+import {mapActions, mapGetters} from "vuex";
+import {hexToDecimal, replaceAt} from "@/utils/transformers";
 
 const colorChangeThreshold = 10;
 
 export default {
   props: {
     active: Boolean,
+    addr: String,
     color: Object
   },
   data() {
     return {
+      roomId: null,
       inColor: {
         h: this.color.h || 0,
         s: this.color.s || 0,
@@ -63,7 +67,8 @@ export default {
     }
   },
   computed: {
-    
+    ...mapGetters(['rgbLamp']),
+    ...mapGetters('ws', ['sensorDevice']),
   },
   watch: {
     color(newVal, oldVal) {
@@ -80,9 +85,31 @@ export default {
       };
 
       this.colorPicker.setColors([this.inColor]);      
+    },
+    sensorDevice: {
+      deep: true,
+      handler(val) {
+        if (val.addr === this.addr) {
+          const rgbLampData = {
+            active: val.status.slice(1, 2),
+            bright: Math.ceil(hexToDecimal(`00${val.status.slice(2, 4)}`, this.icon)),
+            state: val.status
+          };
+
+          this.$store.commit('setRgbLampData', rgbLampData);
+        }
+      }
     }
   },
   methods: {
+    ...mapActions('modules/settings', ['subscribeRequest']),
+    async handleToggle() {
+      let isActive = +this.rgbLamp.state.charAt(1) ? '0' : '1';
+      const active = replaceAt(this.rgbLamp.state, 1, isActive);
+      await this.$emit('toggle', active)
+      const addrs = this.$store.getters.getRoomItems(this.roomId);
+      await this.subscribeRequest(addrs.map(addr => addr.attributes.addr))
+    },
     handleSampleColorClick(color) {
       this.colorPicker.setColors([color]);
     },
@@ -123,13 +150,14 @@ export default {
       });
 
       this.colorPicker.on([/*'color:init',*/ 'color:change', 'color:setActive'], (color) => {
-        if (!this.active) {
+        if (!+this.rgbLamp.active) {
           this.colorPicker.setColors([this.inColor]);
           return;
         }
         this.handleColorChange(color);
       });
     })
+    this.roomId = this.$route.params.id
   },
   components: {
     "app-switch": Switch,

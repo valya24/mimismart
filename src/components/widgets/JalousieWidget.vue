@@ -1,33 +1,44 @@
 <template>
 	<WidgetItem
+    v-if="jalousie.isActive"
     :addr="addr"
     :name="name"
     :icon="item.__.icon"
-    :isActive="isActive"
-    :value="value"
-    :stateText="statusMessage[value]"
+    :isActive="+jalousie.isActive.charAt(1)"
+    :value="+jalousie.isActive.charAt(1)"
+    :stateText="statusMessage[+jalousie.isActive.charAt(1)]"
     class="--no-toggle"
   >
     <transition name="fade" mode="out-in">
       <div class="button-bar"
-        v-if="!isActive">
-        <app-button :label="$t('Open_1')" @click.native="handleOpen" />
-        <app-button :label="$t('Close')" @click.native="handleClose" />
+           v-if="jalousie?.isActive === '04'">
+        <Button :label="$t('Open_1')"
+                @click.native="handleToggle('01')" />
+        <Button :label="$t('Close')"
+                @click.native="handleToggle('00')" />
+      </div>
+      <div class="button-bar" v-else-if="jalousie?.isActive === '00'">
+        <Button :label="$t('Open_1')"
+                @click.native="handleToggle('01')" />
+      </div>
+        <div class="button-bar" v-else-if="jalousie?.isActive === '01'">
+        <Button :label="$t('Close')"
+                @click.native="handleToggle('00')" />
       </div>
 
       <app-button :label="$t('Stop')"
         v-else
-        @click.native="handleClose" />
+        @click.native="handleToggle('00')" />
     </transition>
 	</WidgetItem>
 </template>
 
 <script>
 import WidgetItem from "@/components/widgets/WidgetItem";
-
+import Button from '@/components/buttons/Button'
 import { JALOUSIE_STATES } from '@/utils/consts/consts.js';
 
-import { numberToByteString } from "@/utils/transformers.js";
+import {mapActions, mapGetters} from "vuex";
 
 export default {
 	props: {
@@ -38,7 +49,41 @@ export default {
 			default: true
 		}
 	},
-	computed: {
+  data: () => ({
+    roomId: null,
+  }),
+  watch: {
+    devices: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (!val) return
+        if (Array.isArray(val)) {
+          val.map(item => {
+            if (item && this.addr === item.addr) {
+              this.$store.commit('setJalousieData', {isActive: item.state, addr: this.addr});
+            }
+          })
+        }
+      }
+    },
+    sensorDevice: {
+      deep: true,
+      handler(val) {
+        if (this.addr === val.addr) {
+          this.$store.commit('setJalousieData', {isActive: val.status, addr: this.addr});
+        }
+      }
+    }
+  },
+  async created() {
+    this.roomId = this.$route.params.id
+    // const addrs = this.$store.getters.getRoomItems(this.roomId);
+    // await this.subscribeRequest(addrs.filter(addr => addr.attributes && addr.attributes.addr).map(addr => addr.attributes.addr))
+  },
+  computed: {
+    ...mapGetters(['jalousie']),
+    ...mapGetters('ws', ['sensorDevice', 'devices']),
 		item() {
 			return this.$store.state.itemMap[this.addr];
     },
@@ -62,21 +107,15 @@ export default {
 		}
 	},
 	methods: {
-		handleClose() {
+    ...mapActions('modules/settings', ['subscribeRequest']),
+		async handleToggle(value) {
       if (!this.checkEditPermission()) return;
 
-			this.$store.dispatch("setStatus", {
-				addr: this.addr,
-				status: numberToByteString(0),
-			});
-		},
-		handleOpen() {
-      if (!this.checkEditPermission()) return;
-
-			this.$store.dispatch("setStatus", {
-				addr: this.addr,
-				status: numberToByteString(1),
-			});
+      await this.$store.dispatch('setStatus', {
+        addr: this.addr,
+        status: value
+      });
+      await this.subscribeRequest(this.addr)
 		},
 
 		checkEditPermission() {
@@ -89,6 +128,7 @@ export default {
 	},
 	components: {
 		WidgetItem,
+    Button
 	},
 };
 </script>

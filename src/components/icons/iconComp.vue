@@ -4,6 +4,7 @@
         <component :isOn="isOn" :ignoring="ignoring"
             :is="$options.components[iconName] ? iconName : 'icon-cross'"
             :value="value"
+            :state="state"
             />
     </div>
 </template>
@@ -50,14 +51,14 @@
 }
 
 .--disabled {
-    .fill-variable {fill: @colorGrayedOut}
+    .fill-variable {fill: @colorGrayedOut!important}
     .fill-const {
-        fill: lighten(@colorGrayedOut, 12%);
+        fill: lighten(@colorGrayedOut, 12%)!important;
     }
     .level1, .level2, .level3, .level4 {
-        fill: lighten(@colorGrayedOut, 12%)
+        fill: lighten(@colorGrayedOut, 12%)!important
     }
-    .level1.active, .level2.active, .level3.active, .level4.active {fill: @colorGrayedOut}
+    .level1.active, .level2.active, .level3.active, .level4.active {fill: @colorGrayedOut!important}
 }
 .--enabled {
     .fill-variable {fill: @colorMain}
@@ -279,9 +280,10 @@ import iconLeakMaintenance from './iconLeakMaintenance.vue'
 import iconAlarmOff from './iconAlarmOff.vue'
 import iconMaintenance from './iconMaintenance.vue'
 import iconBackspace from './iconBackspace.vue'
+import iconPump from "@/components/icons/iconPump";
 
 export default {
-    props: ['iconName', 'isOn', 'value', 'ignoring'],
+    props: ['iconName', 'isOn', 'value', 'ignoring', 'state'],
     components: {
         'icon-home': iconHome,
         'icon-home-f': iconHomeF,
@@ -304,9 +306,11 @@ export default {
         'icon-dimer-lamp': iconDimerLamp,
         'icon-rgb-lamp': iconRGBLamp,
         'icon-lamp': iconLamp,
+        'icon-leak': iconLeakDry,
         'icon-alarm': iconAlarm,
         'icon-back': iconBack,
         'icon-trash': iconTrash,
+        'icon-pump': iconPump,
         'icon-duplicate': iconDuplicate,
         'icon-edit': iconEdit,
         'icon-conditioner': iconConditioner,
@@ -345,20 +349,21 @@ export default {
         'icon-convector-floor': iconConvectorFloor,
         'icon-climate-control': iconClimateControl,
         'icon-ventilation': iconVent,
-        'icon-gates-slide': iconGatesSlide,
+        'icon-gate-slide': iconGatesSlide,
         'icon-fancoil': iconFancoil,
         'icon-watering': iconWatering,
         'icon-led-stripe': iconLedStripe,
         'icon-fan': iconFan,
         'icon-air-fan': iconFan,
         'icon-curtains-oneside': iconCurtainsOneside,
-        'icon-gates': iconGates,
+        'icon-gate': iconGates,
         'icon-faucet': iconFaucet,
         'icon-valve': iconFaucet,
         'icon-fountain': iconFountain,
         'icon-meter': iconMeter,
         'icon-socket': iconSocket,
         'icon-switch': iconSwitch,
+        'icon-closing-switch': iconSwitch,
         'icon-curtains-roll': iconCurtainsRoll,
         'icon-radiator': iconRadiator,
         'icon-valve-heating': iconRadiator,

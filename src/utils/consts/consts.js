@@ -37,8 +37,8 @@ export const VANE_VER_TOP_1 = 1;
 export const VANE_VER_TOP_2 = 2;
 export const VANE_VER_MIDDLE = 3;
 export const VANE_VER_BOTTOM_1 = 4;
-export const VANE_VER_BOTTOM_2 = 5;
-export const VANE_VER_ALL = 6;
+export const VANE_VER_BOTTOM_2 = 6;
+export const VANE_VER_ALL = 5;
 
 export const VANE_VER_STATES = {
   VANE_VER_NONE,
@@ -110,7 +110,7 @@ export const groups = {
   'security': {
     name: 'Security',
     icon: 'security',
-    types: ['valve', 'camera', 'rtsp', 'intercom', 'gates', 'security-card-reader'],
+    types: ['valve', 'camera', 'rtsp', 'intercom', 'gate', 'security-card-reader'],
   },
   'sensors': {
     name: 'Sensors',

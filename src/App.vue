@@ -89,8 +89,16 @@
 import AlertNotification from "@/components/etc/AlertNotification.vue";
 
 import TabBar from "@/components/TabBar";
+import { App as CapacitorApp } from '@capacitor/app';
 // import SidebarItem from "@/components/SidebarItem";
 
+CapacitorApp.addListener('backButton', ({canGoBack}) => {
+  if(!canGoBack){
+    CapacitorApp.exitApp();
+  } else {
+    window.history.back();
+  }
+});
 import IconComp from '@/components/icons/iconComp.vue'
 import FloorRoomItem from "@/components/FloorRoomItem";
 
@@ -108,6 +116,10 @@ export default {
 		};
 	},
 	computed: {
+    apiIp() {
+      const settings = JSON.parse(localStorage.getItem('settings'));
+      return settings ? `${settings.network.remoteIp}:${settings.network.remotePort}` : "95.84.154.146:54441"
+    },
 		activePopup() {
 			return this.$store.state.modules.popups.activePopup;
 		},
@@ -222,8 +234,7 @@ export default {
 			"modules/watchedSensors/loadWatchedDevicesFromLocalStorage"
 		);
 
-    let apiIp = "95.84.154.146:54441";
-    this.$connect(`ws://${apiIp}`);
+    this.$connect(`ws://${this.apiIp}`);
     const data = localStorage.getItem('logic.xml')
     if (data) {
       this.$store.dispatch('parseAndSaveLogic', data);

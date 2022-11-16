@@ -84,14 +84,14 @@ export class ConditionerController extends DeviceController {
       return ((1 << (+item.key)) & this.powerlevelsMask) == (1 << (+item.key));
     });
 
-    this.vaneHorMask = this.item.attributes['vane-hor'] != undefined ? parseInt(this.item.attributes['vane-hor']) : parseInt('0xff');
+    this.vaneHorMask = this.item.attributes['vane-hor'] != undefined ? parseInt(this.item.attributes['vane-hor']) : parseInt('00');
     this.vaneHorModes = [
       0, 1, 2, 3, 4, 5, 6
     ].filter(item => {
       return ((1 << (+item)) & this.vaneHorMask) == (1 << (+item));
     });
 
-    this.vaneVerMask = this.item.attributes['vane-ver'] != undefined ? parseInt(this.item.attributes['vane-ver']) : parseInt('0xff');
+    this.vaneVerMask = this.item.attributes['vane-ver'] != undefined ? parseInt(this.item.attributes['vane-ver']) : parseInt('00');
     this.vaneVerModes = [
       0, 1, 2, 3, 4, 5, 6
     ].filter(item => {
@@ -123,8 +123,7 @@ export class ConditionerController extends DeviceController {
     let val = concatHalfBytes([+value, this.halfByteStatus[0][1]]);
     let outStatus = [...this.status];
     outStatus[0] = val;
-
-    super.toggle(outStatus);
+    super.toggle(value);
   }
   changeTemp(value) {
     let outStatus = [...this.status];
@@ -142,7 +141,7 @@ export class ConditionerController extends DeviceController {
 
     return store.dispatch('setStatus', {
       addr: this.addr,
-      status: numberToByteString(outStatus)
+      status: value
     });
   }
   changePower(value) {
@@ -152,33 +151,25 @@ export class ConditionerController extends DeviceController {
 
     return store.dispatch('setStatus', {
       addr: this.addr,
-      status: numberToByteString(outStatus)
+      status: value
     });
   }
-  cycleVaneHor() {
-    let index = this.vaneHorModes.indexOf(this.vaneHor);
-    let nextMode = this.vaneHorModes[(index + 1) % this.vaneHorModes.length];
-
-    let val = concatHalfBytes([+nextMode, this.halfByteStatus[3][1]]);
-    let outStatus = [...this.status];
-    outStatus[3] = val;
+  cycleVaneHor(state) {
+    const status = state.split('')
+    status[7] = Math.abs(+state.charAt(7) + 1)
 
     return store.dispatch('setStatus', {
       addr: this.addr,
-      status: numberToByteString(outStatus)
+      status: status.join("")
     });
   }
-  cycleVaneVer() {
-    let index = this.vaneVerModes.indexOf(this.vaneVer);
-    let nextMode = this.vaneVerModes[(index + 1) % this.vaneVerModes.length];
-
-    let val = concatHalfBytes([this.halfByteStatus[3][0], +nextMode]);
-    let outStatus = [...this.status];
-    outStatus[3] = val;
+  cycleVaneVer(state) {
+    const status = state.split('')
+    status[6] = Math.abs(+state.charAt(6) + 1)
 
     return store.dispatch('setStatus', {
       addr: this.addr,
-      status: numberToByteString(outStatus)
+      status: status.join("")
     });
   }
 }

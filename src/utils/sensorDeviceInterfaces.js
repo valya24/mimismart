@@ -2,9 +2,11 @@
 
 export const temperatureSensor = {
   value: function value(status) {
-    let value = parseFloat('' + status[1] + '.' + status[0]);
-    value = value.toFixed(1);
-    return value;
+    if (status) {
+      let value = parseFloat('' + status[1] + '.' + status[0]);
+      value = value.toFixed(1);
+      return value;
+    }
   },
   units: '°',
   unitsLong: '°C',
@@ -76,6 +78,14 @@ export const doorSensor = {
   // hideValue: true
 }
 
+export const voltageSensor = {
+  value: function value(status) {
+    return parseInt(status[0]);
+  },
+  units: 'B',
+  unitsLong: '',
+}
+
 
 
 
@@ -88,4 +98,5 @@ export default {
   'co2-sensor': CO2Sensor,
   'leak-sensor': leakSensor,
   'door-sensor': doorSensor,
+  'voltage-sensor': voltageSensor,
 }

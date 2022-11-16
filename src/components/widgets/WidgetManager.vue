@@ -17,6 +17,7 @@ export default {
   props: {
     type: String,
     addr: String,
+    item: Object,
     name: String,
     editPermission: {
       type: Boolean,
@@ -24,9 +25,9 @@ export default {
     }
   },
   computed: {
-    item() {
-      return this.$store.state.itemMap[this.addr];
-    },
+    // item() {
+    //   return this.$store.state.itemMap[this.addr];
+    // },
     computedType() {
       let type = this.type == 'virtual' ? this.item.attributes['sub-type'] : this.type;
       return `${type}-widget`;
@@ -39,7 +40,7 @@ export default {
     'jalousie-widget': JalousieWidget,
     'jalousie120-widget': JalousieWidget,
     'gate-widget': JalousieWidget,
-    'gate120-widget': JalousieWidget,
+    'gate': JalousieWidget,
 
     'long-text-widget': TextSensorWidget,
     'valve-heating-widget': ValveHeatingWidget,

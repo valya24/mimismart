@@ -7,6 +7,7 @@
     <CurtainsControl :slot="tabs[0]"
       @change="handleControlChange"
       :active="isActive"
+      :addr="addr"
       :status="status[0]"
       :icon="icon"
     />
@@ -17,9 +18,7 @@
 <script>
 import ModalDeviceControl from "@/components/modals/ModalDeviceControl";
 import CurtainsControl from "@/components/deviceControls/CurtainsControl";
-// import ModalDeviceControlStats from "@/components/modals/ModalDeviceControlStats";
-
-import { numberToByteString } from "@/utils/transformers.js";
+import {mapActions, mapGetters} from "vuex";
 
 export default {
   props: {
@@ -31,7 +30,19 @@ export default {
     addr: String,
     // status: Array
   },
+  watch: {
+    sensorDevice: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (this.addr === val.addr) {
+          this.$store.commit('setJalousieData', {isActive: val.status, addr: this.addr});
+        }
+      }
+    }
+  },
   computed: {
+    ...mapGetters('ws', ['sensorDevice']),
     tabs() {
       return [
         this.$t("Control"),
@@ -53,11 +64,14 @@ export default {
     }
   },
   methods: {
-    handleControlChange(value) {
-      this.$store.dispatch('setStatus', {
+    ...mapActions('modules/settings', ['subscribeRequest']),
+    async handleControlChange(value) {
+      await this.$store.dispatch('setStatus', {
         addr: this.addr,
-				status: numberToByteString(value)
-      })
+				status: value
+      });
+
+      await this.subscribeRequest(this.addr)
     }
   },
   components: {

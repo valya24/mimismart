@@ -9,7 +9,7 @@
 			<img class="caret" src="@/assets/caret.svg" alt />
 		</div>
 
-		<BtnIcon v-else :icon="'icon-' + activeModeIcon" @click.native="showModeSelectModal" />
+		<BtnIcon v-else :icon="'icon-' + activeModeIcon" @click.native="showModeSelectModal" :disabled="disabled"/>
 
 		<DropdownList
 			:items="modes"
@@ -43,7 +43,7 @@ export default {
 			default: 'name'
 		},
 		activeMode: {
-			type: [String, Number],
+			type: [String, Object],
 			default() {
 				return this.modes[0] ? this.modes[0][this.valueKey] : 'defaultMode';
 			}
@@ -55,7 +55,8 @@ export default {
 		alignRight: {
 			type: Boolean,
 			default: false
-		}
+		},
+    disabled: Boolean
 	},
 	data() {
 		return {
@@ -65,8 +66,12 @@ export default {
 	},
 	computed: {
 		activeModeIcon() {
-			let item = this.modes.find( item => item[this.valueKey] == this.activeMode );
-			return item ? item.icon : 'close';
+      if (this.activeMode && this.activeMode.custom) {
+        return 'hot'
+      } else {
+        let item = this.modes.find( item => item[this.valueKey] == this.activeMode );
+        return item ? item.icon : 'close';
+      }
 		}
 	},
 	methods: {

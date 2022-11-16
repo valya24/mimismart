@@ -7,17 +7,17 @@
 			/>
 			<path
 				class="arrow-top fill-const"
-				:class="{ 'active': [VANE_VER_ALL, VANE_VER_TOP_1, VANE_VER_TOP_2].includes(+value) }"
+				:class="{ 'active': value == VANE_VER_ALL || value == VANE_VER_TOP_1 || value == VANE_VER_TOP_2 }"
 				d="M14.1504 2.64258L3.80469 6.42969L3.10547 4.51758L1 9.05274L5.53516 11.1582L4.83594 9.2461L15.1816 5.45899C14.6828 4.58447 14.3342 3.63245 14.1504 2.64258Z"
 			/>
 			<path
 				class="arrow-middle fill-const"
-				:class="{ 'active': [VANE_VER_ALL, VANE_VER_TOP_2, VANE_VER_MIDDLE, VANE_VER_BOTTOM_1].includes(+value) }"
+				:class="{ 'active': value == VANE_VER_ALL || value == VANE_VER_TOP_2 || VANE_VER_MIDDLE || value == VANE_VER_BOTTOM_1 }"
 				d="M15.6641 6.21484L7.87305 14.0059L6.43359 12.5664V17.5664H11.4336L9.99414 16.127L17.7852 8.33594C16.9644 7.75254 16.2475 7.03555 15.6641 6.21484Z"
 			/>
 			<path
 				class="arrow-bottom fill-const"
-				:class="{ 'active': [VANE_VER_ALL, VANE_VER_BOTTOM_1, VANE_VER_BOTTOM_2].includes(+value) }"
+				:class="{ 'active': value == VANE_VER_ALL || value == VANE_VER_BOTTOM_1 || value == VANE_VER_BOTTOM_2 }"
 				d="M18.541 8.81836L14.7539 19.1641L12.8418 18.4649L14.9473 23L19.4824 20.8945L17.5723 20.1953L21.3574 9.84961C20.3676 9.66581 19.4155 9.31722 18.541 8.81836Z"
 			/>
 		</svg>

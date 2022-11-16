@@ -1,0 +1,7 @@
+{
+  "appId": "com.mimismart.app",
+  "appName": "mimismart",
+  "webDir": "dist",
+  "linuxAndroidStudioPath": "/usr/local/android-studio/bin/studio.sh",
+  "bundledWebRuntime": false
+}

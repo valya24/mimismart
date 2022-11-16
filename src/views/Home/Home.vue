@@ -60,7 +60,7 @@ export default {
 	min-height: calc(100vh - 46px);
 	width: 100%;
 	max-width: 100%;
-	transition: all 0.3s cubic-bezier(0.55, 0, 0.1, 1);
+	transition: all .8s cubic-bezier(0.55, 0, 0.1, 1);
 	// padding-bottom: 56+16px;
 	// padding-bottom: 16px;
 	&.slide-left-enter,

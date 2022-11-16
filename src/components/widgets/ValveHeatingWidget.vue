@@ -2,19 +2,19 @@
   <WidgetItem :icon="icon"
     :name="name" :addr="addr"
     :currentTemp="isNaN(Math.round(roomTemp)) ? undefined : ''+Math.round(roomTemp)"
-    :class="{ '--disabled': !isActive }"
-    :isActive="isActive"
+    :class="{ '--disabled': !manualIsActive }"
+    :isActive="manualIsActive"
     :iconInactive="!iconActive"
     :iconTitle="autoModeActive ? $t('Auto') : ''"
     :controlsDisabled="!autoModeActive"
-    :activeText="$t('Heating in mode') + ' ' + $t(mode)"
-    :inactiveText="$t('Cooling in mode') + ' ' + $t(mode)"
+    :activeText="statusMessage"
+    :inactiveText="statusMessage"
 
     @toggle="handleToggle"
   >
     <ModeSelectDropdown
       :modes="visibleModes"
-      :activeMode="mode == 'always-off' ? lastActiveMode : mode"
+      :activeMode="currentMode && currentMode.includes('always-off') ? lastActiveMode : currentMode"
       :valueKey="'name'"
       @selectMode="selectMode"
     />
@@ -29,7 +29,7 @@
       />
         <div class="value">
           <transition name="counter" mode="out-in">
-            <span :key="computedTemp">{{ computedTemp }}</span>
+            <span :key="computedTemp">{{ !isManual ? valveHeating.temp + '&deg;' : '--' }}</span>
           </transition>
         </div>
 
@@ -51,6 +51,8 @@ import ModeSelectDropdown from "@/components/etc/ModeSelectDropdown"
 import { ValveHeatingController } from "@/utils/deviceControllers";
 
 import { debounce } from "@/utils/functions.js";
+import {mapActions, mapGetters} from "vuex";
+import {hexToDecimal} from "@/utils/transformers";
 
 const holdDelay = 500;
 const holdInterval = 350;
@@ -67,7 +69,7 @@ export default {
 		},
 		maxTemp: {
 			type: Number,
-			default: 50
+			default: 30
     },
     editPermission: {
 			type: Boolean,
@@ -79,9 +81,30 @@ export default {
       timeout: null,
       interval: null,
       temperature: 0,
+      currentMode: null
     }
   },
+
   computed: {
+    ...mapGetters(['valveHeating', 'itemMap']),
+    ...mapGetters('ws', ['sensorDevice', 'devices']),
+    manualIsActive() {
+      if (!this.currentMode) return false;
+      if (this.currentMode === 'always-off') {
+        return false
+      } else if (this.currentMode.includes('Manual')) {
+        return +this.valveHeating.active
+      } else {
+        return this.isActive
+      }
+    },
+    statusMessage() {
+      return (+this.valveHeating.active ? this.$t('Heating in mode') : this.$t('Cooling in mode')) + ' ' + this.$t(this.currentMode);
+    },
+    isManual() {
+      if (!this.currentMode) return
+      return this.currentMode === 'Manual' || this.currentMode.includes('always-off')
+    },
     item() {
       return this.$store.state.itemMap[this.addr];
     },
@@ -129,13 +152,70 @@ export default {
   watch: {
     controllerTemp(newVal) {
       this.temperature = newVal;
-    }
+    },
+    itemMap: {
+      deep: true,
+      handler(val) {
+        this.currentMode = val[this.addr].attributes.automation ? val[this.addr].attributes.automation : 'Manual'
+      }
+    },
+    sensorDevice: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val.addr === this.addr) {
+          const valveHeatingData = {
+            state: this.valveHeating.state,
+            active: val.status.slice(1, 2),
+            temp: +hexToDecimal(val.status.slice(2, 6)) <= 50 ? +hexToDecimal(val.status.slice(2, 6)) : '--',
+            roomTemp: +hexToDecimal(val.status.slice(6, 10)) <= 50 ? +hexToDecimal(val.status.slice(6, 10)) : '--',
+          }
+
+          this.$store.dispatch("loadLogicXML");
+          this.$store.commit('setValveHeatingData', valveHeatingData);
+        }
+      }
+    },
+    devices: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (!Array.isArray(val) && val.addr === this.addr) {
+          const valveHeatingData = {
+            state: this.valveHeating.state,
+            active: val.state.slice(1, 2),
+            temp: +hexToDecimal(val.state.slice(2, 6)) <= 50 ? +hexToDecimal(val.state.slice(2, 6)) : '--',
+            roomTemp: +hexToDecimal(val.state.slice(6, 10)) <= 50 ? +hexToDecimal(val.state.slice(6, 10)) : '--',
+          }
+
+          this.$store.dispatch("loadLogicXML");
+          this.$store.commit('setValveHeatingData', valveHeatingData);
+        }
+      }
+    },
   },
   methods: {
-    handleToggle(value) {
-      if (!this.checkEditPermission()) return;
+    ...mapActions('modules/settings', ['subscribeRequest']),
+    async handleToggle() {
+      await this.$store.dispatch("loadLogicXML");
+      if (!this.isManual) {
+        await this.controller.toggle('as:-10')
+      } else if (this.currentMode === 'always-off') {
+        await this.handleChangeMode(this.lastActiveMode)
+      } else {
+        let isActive = +this.valveHeating.active ? '0' : '1'
 
-			return this.controller.toggle(value);
+        await this.$store.dispatch('setStatus', {
+          addr: this.addr,
+          status: `0${isActive}`
+        });
+      }
+
+      const addrs = this.$store.getters.getRoomItems(this.roomId);
+      await this.subscribeRequest(addrs.map(addr => addr.attributes.addr))
+      await this.subscribeRequest(this.addr)
+      await this.$store.dispatch("loadLogicXML");
+      this.currentMode = this.item.attributes.automation ? this.item.attributes.automation : 'Manual'
     },
     handleChangeMode(value) {
       if (!this.checkEditPermission()) return;
@@ -158,12 +238,20 @@ export default {
       this.changeControllerTemp(value);
     },
     incrementTemp() {
-			let temp = (this.temperature + 1 <= this.maxTemp) ? this.temperature + 1 : this.maxTemp;
-			this.handleChangeTemp(temp);
+      if (+this.valveHeating.temp  + 1 <= this.maxTemp) {
+        this.valveHeating.temp = +this.valveHeating.temp + 1;
+        this.controller.changeTemp(`ts:${this.valveHeating.temp.toFixed()}0`)
+      } else {
+        return this.valveHeating.temp  = this.maxTemp;
+      }
 		},
 		decrementTemp() {
-			let temp = (this.temperature - 1 >= this.minTemp) ? this.temperature - 1 : this.minTemp;
-			this.handleChangeTemp(temp);
+      if (+this.valveHeating.temp  - 1 >= this.minTemp) {
+        this.valveHeating.temp -= 1
+        this.controller.changeTemp(`ts:${this.valveHeating.temp.toFixed()}0`)
+      } else {
+        return this.valveHeating.temp = this.minTemp;
+      }
     },
     selectMode(mode) {
       if (!this.checkEditPermission()) return;
@@ -182,6 +270,7 @@ export default {
 
     //	Plus & Minus buttons hold
     handleBtnClick(val) {
+      if (this.isManual) return
       if (val > 0) {
         this.incrementTemp();
       } else {
@@ -189,6 +278,7 @@ export default {
       }
     },
 		handleBtnTouchStart(val) {
+      if (this.isManual) return
 			this.timeout = setTimeout( () => {
 				this.handleBtnClick(val);
 				this.interval = setInterval( () => {
@@ -209,7 +299,6 @@ export default {
   },
   created() {
     if (!this.controller) {
-      console.log('creating controller');
       this.$store.commit('saveController', new ValveHeatingController({
         addr: this.addr,
         status: this.status,
@@ -217,7 +306,11 @@ export default {
       }));
     }
   },
-  mounted() {
+  async mounted() {
+    await this.subscribeRequest(this.addr);
+    await this.$store.dispatch("loadLogicXML");
+    this.currentMode = this.mode
+    this.roomId = this.$route.params.id
     this.temperature = this.controller.temperature;
   },
   components: {

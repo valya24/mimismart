@@ -5,19 +5,18 @@
     :tabs="tabs"
   >
     <BinaryControl :slot="tabs[0]"
-      :icon="icon"
+      :icon="iconDevice"
       @change="handleControlChange"
       :active="isActive" />
-    <!-- <ModalDeviceControlStats :slot="tabs[1]" /> -->
   </ModalDeviceControl>
 </template>
 
 <script>
 import ModalDeviceControl from "@/components/modals/ModalDeviceControl";
 import BinaryControl from "@/components/deviceControls/BinaryControl";
-// import ModalDeviceControlStats from "@/components/modals/ModalDeviceControlStats";
 
 import { numberToByteString } from "@/utils/transformers.js";
+import {mapActions, mapGetters} from "vuex";
 
 export default {
   props: {
@@ -26,11 +25,38 @@ export default {
       type: Boolean,
     },
     name: String,
+    item: Object,
     addr: String,
     status: Array,
-    icon: String
+    icon: String,
+  },
+
+  data: () => ({
+    roomId: null
+  }),
+
+  mounted() {
+    this.roomId = this.$route.params.id
+  },
+  watch: {
+    sensorDevice: {
+      deep: true,
+      handler(val) {
+        if (this.addr === val.addr) {
+          this.$store.commit('setLampData', {isActive: val.status});
+        }
+      }
+    }
   },
   computed: {
+    ...mapGetters('ws', ['sensorDevice']),
+    iconDevice() {
+      if (this.item.attributes['sub-type'] && this.item.attributes['sub-type'] === 'socket') {
+        return 'socket'
+      } else {
+        return this.icon
+      }
+    },
     tabs() {
       return [
         this.$t("Control"),
@@ -43,11 +69,15 @@ export default {
     }
   },
   methods: {
-    handleControlChange(value) {
-      this.$store.dispatch('setStatus', {
+    ...mapActions('modules/settings', ['subscribeRequest']),
+    async handleControlChange(value) {
+      await this.$store.dispatch('setStatus', {
         addr: this.addr,
 				status: numberToByteString(value)
-      })
+      });
+
+      const addrs = this.$store.getters.getRoomItems(this.roomId);
+      await this.subscribeRequest(addrs.map(addr => addr.attributes.addr))
     }
   },
   components: {

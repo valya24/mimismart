@@ -25,6 +25,8 @@
       <WidgetManager v-for="(item, i) in widgets"
         :key="item.attributes.name + item.attributes.addr + i"
         :type="item.attributes.type"
+        :item="item"
+        :state="addrState[item.attributes.addr]"
         :name="item.attributes.name"
         :addr="item.attributes.addr"
         @callControlApp="handleDeviceTouchHold(item)"
@@ -36,6 +38,8 @@
       <device-as-icon v-for="(item, i) in items"
         :key="item.attributes.name + item.attributes.addr + i"
         :addr="item.attributes.addr"
+        :idRoom="idRoom"
+        :state="addrState[item.attributes.addr]"
         :itemData="item"
 
         @change="handleDeviceClick"
@@ -53,8 +57,14 @@ import WidgetManager from "@/components/widgets/WidgetManager.vue";
 
 import { ValveHeatingController } from "@/utils/deviceControllers";
 
+import {mapActions, mapGetters} from 'vuex';
+
 export default {
   props: {
+    idRoom: {
+      type: String,
+      default: ''
+    },
     title: {
       type: String,
       default: null
@@ -90,8 +100,10 @@ export default {
   },
   data() {
     return {
+      allItems: [],
+      addrState: {},
 			activeItem: { attributes: {} },
-
+      allDevices: null,
       passwordPassed: false,
       showPasswordModal: false,
       checkPasswordPromise: null,
@@ -99,12 +111,42 @@ export default {
       passedItems: []
     }
   },
+  async mounted() {
+    await this.subscribeRequest(this.items.map(item => item.attributes.addr))
+  },
+  destroyed() {
+    this.stopSubscribeRequest(this.items.map(item => item.attributes.addr))
+  },
+  watch: {
+    devices: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (!val) return
+        if (Array.isArray(val)) {
+          this.allDevices = val
+
+          this.items.map(item => {
+            val.map(device => {
+              if (device && item.attributes.addr === device.addr) {
+                if (device.state === 'undefined') return
+                this.allItems.push({[device.addr]: device.state})
+              }
+            })
+          })
+          this.addrState = Object.assign({}, ...this.allItems);
+        }
+      }
+    }
+  },
   computed: {
+    ...mapGetters('ws', ['devices', 'sensorDevice']),
     user() {
       return this.$store.state.modules.settings.user;
     }
   },
   methods: {
+    ...mapActions('modules/settings', ['subscribeRequest', 'stopSubscribeRequest']),
 		//	TODO: Move this logic into DeviceAsIcon component
 
     getDeviceOnStatus(item) {
@@ -236,6 +278,7 @@ export default {
           status: numberToByteString(0)
         })
       })
+      this.subscribeRequest(this.items.map(item => item.attributes.addr))
     },
 
     closeAll() {
@@ -257,6 +300,8 @@ export default {
             })
           }, 250)
         }
+        this.$store.commit('setGateData', {isActive: '00'});
+        this.subscribeRequest(item.attributes.addr)
       })
     },
     openAll() {
@@ -271,12 +316,15 @@ export default {
 
         if (this.$store.state.itemMap[item.attributes.addr].__.status[0] != JALOUSIE_OPENING) {
           setTimeout(() => {
+            this.subscribeRequest(item.attributes.addr)
             this.$store.dispatch('setStatus', {
               addr: item.attributes.addr,
               status: numberToByteString(1)
             })
           }, 250)
         }
+        this.$store.commit('setGateData', {isActive: '01'});
+        this.subscribeRequest(item.attributes.addr)
       })
     },
 
@@ -304,7 +352,7 @@ export default {
 	flex-direction: column;
 	.grid-icons {
 		margin: 0 16px;
-		margin-top: 16px;
+		margin-top: 50px;
 		&.--last {
 			order: 10;
 		}

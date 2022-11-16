@@ -3,7 +3,18 @@ const state = {
     isConnected: false,
     message: '',
     reconnectError: false,
+    devices: null,
+    device: null,
+    allDevices: null,
+    sensorDevice: null
   },
+}
+
+const getters = {
+  devices: state => state.socket.devices,
+  allDevices: state => state.socket.allDevices,
+  selectedDevice: state => state.socket.device,
+  sensorDevice: state => state.socket.sensorDevice,
 }
 
 const mutations = {
@@ -16,12 +27,13 @@ const mutations = {
       // this.dispatch("loadLogic")
       // this.dispatch("subscribeOnLogic")
     // }
-    if (this.state.subscribedDevicesAddrs && this.state.subscribedDevicesAddrs.length) {
-      this.dispatch('resubscribeOnStatuses');
-    }
+    // if (this.state.subscribedDevicesAddrs && this.state.subscribedDevicesAddrs.length) {
+    //   this.dispatch('resubscribeOnStatuses');
+    // }
   },
   SOCKET_ONCLOSE(state, event) {
     console.log(event);
+    alert('Ошибка подключения к серверу!');
     state.socket.isConnected = false
   },
   SOCKET_ONERROR(state, event) {
@@ -30,7 +42,27 @@ const mutations = {
   // default handler called for all methods
   SOCKET_ONMESSAGE(state, message) {
     state.socket.message = message;
-    // console.log(message);
+    const data = JSON.parse(message.data);
+    switch (data.response) {
+      case 'get-state':
+        if (data.devices) {
+          state.socket.devices = data.devices
+        } else {
+          state.socket.devices = data
+        }
+        break;
+      case 'set-state':
+        state.socket.device = data
+        break;
+      case 'all-devices':
+        state.socket.allDevices = data
+        break;
+      case 'state-changed':
+        state.socket.sensorDevice = data
+        break;
+      default:
+        return state
+    }
   },
   // mutations for reconnect methods
   SOCKET_RECONNECT(state, count) {
@@ -42,12 +74,10 @@ const mutations = {
 }
 
 const actions = {
-  SOCKET_ONOPEN({ commit, dispatch }, event) {
+  SOCKET_ONOPEN({ commit }, event) {
     commit('SOCKET_ONOPEN', event)
     // dispatch('loadLogic', null, { root: true });
-    dispatch("subscribeOnLogic", null, { root: true });
-    
-    dispatch('modules/settings/loadSettingsFromOldApp', null, { root: true });
+    // dispatch('modules/settings/loadSettingsFromOldApp', null, { root: true });
   },
   SOCKET_ONCLOSE({ commit }, event) {
     commit('SOCKET_ONCLOSE', event);
@@ -86,6 +116,7 @@ const actions = {
 export default {
   namespaced: true,
   state,
+  getters,
   mutations,
   actions
 }

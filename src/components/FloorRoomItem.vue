@@ -1,18 +1,19 @@
 <template>
-	<div class="floor-room-item" @click="subscribe">
+  <transition name="fade">
+	<div class="floor-room-item">
 		<div class="room-image">
 			<img :src="data.image ? data.image : roomImage" alt="">
 		</div>
 		<div class="room-name">{{ data.name }}</div>
-		<div class="room-devices">{{ $tc('devices', data.amount) }}</div>
+		<div class="room-devices">{{ $t('elements') }} {{ $t(data.amount, 'devices') }}</div>
 
 		<RoomSensorsShort :sensorsAddrs="data.sensorsAddrs" />
 	</div>
+  </transition>
 </template>
 
 <script>
 import RoomSensorsShort from "@/components/RoomSensorsShort";
-import { mapActions } from 'vuex';
 export default {
 	props: {
 		data: Object
@@ -22,20 +23,9 @@ export default {
 			roomImage: require('@/assets/room-image_1.jpg'),
 		}
 	},
-	components: {
+  components: {
 		RoomSensorsShort
-	},
-
-  methods: {
-    // eslint-disable-next-line no-mixed-spaces-and-tabs
-	  ...mapActions('modules/settings', ['subscribeRequest']),
-    subscribe () {
-      // this.subscribeRequest(this.data.sensorsAddrs)
-
-      //TODO use real dynamic params for addr
-      this.subscribeRequest(["588:8", "588:9","588:10", "588:11", "588:12", "588:13", "588:16", "588:23", "588:24", "588:98"])
-    }
-  }
+	}
 };
 </script>
 

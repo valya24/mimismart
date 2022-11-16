@@ -1,31 +1,48 @@
 <template>
 	<div class="room-sensors">
-		<!-- <RoomSensor icon="icon-temperature">24&deg; C</RoomSensor> -->
-		<!-- <RoomSensor icon="icon-illumination">80%</RoomSensor> -->
 		<RoomSensor v-for="(sensor, i) in filteredSensors" :key="i"
 			:icon="'icon-' + sensor.attributes.type.split('-sensor')[0]" >
-			{{ getSensorValueString(sensor) }} 
+      <sensor-device :addr="sensor.attributes.addr" :sensor="sensor" :unit="sensorDeviceInterfaces[sensor.attributes.type].unitsLong"/>
 		</RoomSensor>
 	</div>
 </template>
 
 <script>
 import RoomSensor from "@/components/RoomSensor";
+import SensorDevice from "@/views/Home/HomeRoom/SensorDevice";
 
 import sensorDeviceInterfaces from "@/utils/sensorDeviceInterfaces.js";
+import {mapActions} from "vuex";
 
 //	TODO: Maybe move this logic to parent component
 const allowedTypes = ['temperature', 'illumination'];
 
 export default {
+  data: () => ({
+    sensorDeviceInterfaces
+  }),
+
 	props: {
-		// sensors: Array,
 		sensorsAddrs: {
 			type: Array,
 			default() { return [] }
 		}
 	},
+
+  watch: {
+    isConnected(val) {
+      if (val) {
+        const addrs = this.filteredSensors.filter(sensor => sensor.attributes?.addr).map(item => item.attributes?.addr)
+        if (addrs.length) {
+          addrs.map(addr => this.subscribeRequest(addr))
+        }
+      }
+    }
+  },
 	computed: {
+    isConnected() {
+      return this.$store.state.ws.socket.isConnected
+    },
 		sensors() {
 			return this.sensorsAddrs.map( addr => this.$store.state.itemMap[addr] );
 		},
@@ -43,11 +60,11 @@ export default {
 					filledTypes.push(type);
 				}
 			});
-
 			return outArr;
 		},
 	},
 	methods: {
+    ...mapActions('modules/settings', ['subscribeRequest']),
 		getSensorValueString(sensor) {
 			return (isNaN(sensorDeviceInterfaces[sensor.attributes.type].value(sensor.__.status)) ? '--' : sensorDeviceInterfaces[sensor.attributes.type].value(sensor.__.status)) +
 					sensorDeviceInterfaces[sensor.attributes.type].unitsLong;
@@ -71,7 +88,8 @@ export default {
 		this.unsubscribe();
 	},
 	components: {
-		RoomSensor
+		RoomSensor,
+    SensorDevice
 	}
 };
 </script>

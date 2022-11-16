@@ -11,8 +11,9 @@
       :roomTemp="+roomTemp"
       :modes="modes"
       :mode="mode"
+      :item="item"
       :lastActiveMode="lastActiveMode"
-      
+      :addr="addr"
       @toggle="handleToggle"
       @changeMode="handleChangeMode"
       @changeTemp="handleChangeTemp"
@@ -34,6 +35,7 @@ export default {
       default: false,
       type: Boolean,
     },
+    item: Object,
     name: String,
     addr: String,
     status: Array,

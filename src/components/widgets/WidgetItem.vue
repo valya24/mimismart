@@ -19,7 +19,8 @@
 				<div class="col-name">
 					<div class="device-name">{{ computedName }}</div>
 					<div class="device-status" v-if="!sensor">
-						{{ stateText ? stateText : (isActive && !iconInactive ? activeText : inactiveText) }}
+            <span v-if="icon.includes('jalousie') || icon.includes('gate')">{{ stateText }}</span>
+						<span v-else>{{ statusMessage ? statusMessage : (isActive && !iconInactive ? activeText : inactiveText) }}</span>
 						<!-- {{ isActive && !iconInactive ? activeText : inactiveText }} -->
 					</div>
 				</div>
@@ -53,7 +54,6 @@ export default {
 			default: ''
 		},
 		isActive: {
-			type: Boolean,
 			default: false,
 		},
 		controlsDisabled: {
@@ -83,6 +83,10 @@ export default {
 			type: String,
 			default: null
 		},
+    statusMessage: {
+      type: String,
+      default: null
+    },
 		currentTemp: {
 			type: String,
 			default: ''

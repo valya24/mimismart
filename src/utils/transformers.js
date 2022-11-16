@@ -150,3 +150,47 @@ export function parseSettingsString(settingsString) {
 
   return result;
 }
+
+export function hexToDecimal (value, type) {
+  if (!value) return
+  let first = value.slice(0, 2)
+  let second = value.slice(2, 4)
+
+  const hexToDecimal = hex => parseInt(hex, 16);
+
+  const dec1 = Number(hexToDecimal(first));
+  const dec2 = Number(hexToDecimal(second));
+
+  let calculation = dec1 / 250 * 10;
+  let result = Number(dec2 + "." + Math.round(calculation));
+
+  switch (type) {
+    case 'co2':
+      return Math.round(+(dec2 * 100) + (dec1 * 100) / 255)
+    case 'dimer-lamp':
+      return (result.toFixed(1) * 100) / 255;
+    case 'sensor-device':
+      return result
+    case 'leak':
+      switch (value) {
+        case '00':
+          return 'Протечки <br> нет';
+        case '01':
+          return 'Протечка  <br> есть'
+        case '02':
+          return 'Протечка <br> игнорируется';
+        case '03':
+          return ''
+        default:
+          return '--'
+      }
+  }
+
+  return result.toFixed(1);
+}
+
+export function replaceAt (str, index, replacement) {
+  str = str.split('');
+  str[index] = replacement;
+  return str = str.join('');
+}

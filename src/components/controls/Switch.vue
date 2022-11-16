@@ -10,12 +10,7 @@
 
 <script>
 export default {
-	props: {
-		checked: {
-			type: Boolean,
-			default: false
-		}
-	},
+	props: ['checked'],
 	model: {
 		prop: 'checked',
 		event: 'change'

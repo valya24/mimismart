@@ -50,6 +50,7 @@ import ModalDeviceSettings from "@/components/modals/ModalDeviceSettings";
 import ModalInputPassword from "@/components/modals/ModalInputPassword";
 
 import LocationItem from "@/components/containers/LocationItem.vue";
+import {mapActions, mapGetters} from "vuex";
 
 export default {
 	data() {
@@ -57,8 +58,18 @@ export default {
 			activeItem: { attributes: {} }
 		}
 	},
+  // watch: {
+  //   devices: {
+  //     deep: true,
+  //     handler(val) {
+  //       console.log(val)
+  //     }
+  //   }
+  // },
 	computed: {
-		showSystem() {
+    ...mapGetters(['itemMap']),
+    ...mapGetters('ws', ['sensorDevice', 'devices']),
+    showSystem() {
 			return this.$store.state.modules.settings.interface.showSystem;
 		},
 		widgetsOnTop() {
@@ -81,6 +92,7 @@ export default {
 		},
 	},
 	methods: {
+    ...mapActions('modules/settings', ['subscribeRequest']),
 		getFloorRooms(floorId) {
 			return this.$store.getters.getFloorRooms(floorId);
 		},
@@ -116,6 +128,10 @@ export default {
 	},
 	mounted() {
 		this.subscribeOnAllStatuses();
+    this.rooms.map(room => {
+      const addrs = this.$store.getters.getRoomItems(room.__.id).map(item => item.attributes.addr)
+      this.subscribeRequest(addrs)
+    })
 	},
 	components: {
 		Header,

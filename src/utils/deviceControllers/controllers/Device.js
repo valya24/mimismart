@@ -1,6 +1,3 @@
-import {
-  numberToByteString,
-} from "@/utils/transformers.js";
 
 import store from "@/store/index.js";
 
@@ -19,7 +16,7 @@ export class DeviceController {
   toggle(value) {
     return store.dispatch('setStatus', {
       addr: this.addr,
-      status: numberToByteString(value)
+      status: value
     });
   }
 }

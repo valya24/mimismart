@@ -3,7 +3,7 @@
     <component :is="`${computedType}-control-app`"
       v-if="isActive"
       :configData="itemData"
-
+      :item="item"
       :name="itemData.attributes.name"
       :addr="itemData.attributes.addr"
       :status="status"
@@ -17,9 +17,11 @@
 import BinaryControlApp from '@/components/deviceControlApps/BinaryControlApp.vue';
 // import LampControlApp from '@/components/deviceControlApps/LampControlApp.vue';
 import DimerControlApp from '@/components/deviceControlApps/DimerControlApp.vue';
+import ValveControllApp from '@/components/deviceControlApps/ValveControlApp';
 import RGBLampControlApp from '@/components/deviceControlApps/RGBLampControlApp.vue';
 
 import JalousieControlApp from '@/components/deviceControlApps/JalousieControlApp.vue';
+import GateControlApp from '@/components/deviceControlApps/GateControlApp.vue';
 import ConditionerControlApp from '@/components/deviceControlApps/ConditionerControlApp.vue';
 import ValveHeatingControlApp from '@/components/deviceControlApps/ValveHeatingControlApp.vue';
 
@@ -73,8 +75,10 @@ export default {
     'script-control-app': BinaryControlApp,
 
     'dimer-lamp-control-app': DimerControlApp,
+    'valve-control-app': ValveControllApp,
     'rgb-lamp-control-app': RGBLampControlApp,
     'jalousie-control-app': JalousieControlApp,
+    'gate-control-app': GateControlApp,
     'jalousie120-control-app': JalousieControlApp,
 
     'conditioner-control-app': ConditionerControlApp,

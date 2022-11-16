@@ -1,10 +1,11 @@
 <template>
 	<div class="icon-leak-maintenance" :class="{on: isOn, '--ignoring': ignoring}">
-		<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-			<path class="fill-const" d="M20.5,15h-17L4,17l2.5,1.5l3,2H13l3-1l3-2L20.5,15z"/>
-<path class="fill-variable" d="M12,22C6.5,22,2,17.5,2,12C2,6.5,6.5,2,12,2c5.5,0,10,4.5,10,10C22,17.5,17.5,22,12,22z M12,4c-4.4,0-8,3.6-8,8
-	s3.6,8,8,8s8-3.6,8-8S16.4,4,12,4z M11,5h2v6h-2V5z M11,12h2v2h-2V12z"/>
-		</svg>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path opacity="0.5" d="M20.5 15H3.5L4 17L6.5 18.5L9.5 20.5H13L16 19.5L19 17.5L20.5 15Z" fill="white"/>
+      <path d="M12 6.9551L14.3759 10.9466C15.1092 12.1786 14.7791 13.7668 13.6155 14.6046C12.6506 15.2994 11.3494 15.2994 10.3845 14.6046L9.80015 15.4161L10.3845 14.6046C9.22089 13.7668 8.89078 12.1786 9.62413 10.9466L12 6.9551Z" stroke="white" stroke-width="2"/>
+      <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2"/>
+    </svg>
+
 	</div>
 </template>
 

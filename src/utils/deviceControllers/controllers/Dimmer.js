@@ -1,15 +1,13 @@
-import {
-  numberToByteString,
-} from "@/utils/transformers.js";
-
 import DeviceController from './Device';
 
 import store from "@/store/index.js";
+import {numberToByteString} from "@/utils/transformers";
 
 export class DimmerController extends DeviceController {
   constructor(props) {
     super(props)
-    this.brightness = parseInt(this.status[1]);
+    // this.brightness = parseInt(this.status[1]);
+    this.brightness = this.status.bright;
     this.item = store.state.itemMap[this.addr];
   }
   updateStatus(status) {
@@ -17,11 +15,9 @@ export class DimmerController extends DeviceController {
     this.brightness = parseInt(this.status[1]);
   }
   toggle(value) {
-    this.isActive = !!value;
     return store.dispatch('setStatus', {
       addr: this.addr,
-      // status: numberToByteString([value, 254, 0, 0])
-      status: numberToByteString([value])
+      status: value
     });
   }
   changeBrightness(value) {

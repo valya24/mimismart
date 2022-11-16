@@ -14,7 +14,7 @@
         <div class="dropdown-list-item__icon" v-if="item.icon">
           <icon-comp :iconName="'icon-' + item.icon" />
         </div>
-        <div class="dropdown-list-item__name">{{ item.name }}</div>
+        <div class="dropdown-list-item__name">{{ $t(item.name) }}</div>
         <div class="dropdown-list-item__check" v-if="!menu">
           <icon-comp iconName="icon-check" v-if="item[valueKey] == value" />
         </div>

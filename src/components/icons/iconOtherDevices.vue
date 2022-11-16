@@ -1,5 +1,5 @@
 <template>
-	<div class="icon-alarm" :class="{on: isOn}">
+	<div class="icon-alarm sensor-icon" :class="{on: isOn}">
 		<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 			<path class="fill-variable" d="M6,5C5.4,5,5,5.4,5,6v12c0,0.6,0.4,1,1,1h12c0.6,0,1-0.4,1-1V6c0-0.6-0.4-1-1-1H6z M21,7v2h3v2h-3v2h3v2h-3v2h3
 				v2h-3.2c-0.3,0.8-1,1.5-1.8,1.8V24h-2v-3h-2v3h-2v-3h-2v3H9v-3H7v3H5v-3.2c-0.8-0.3-1.5-1-1.8-1.8H0v-2h3v-2H0v-2h3v-2H0V9h3V7H0V5
@@ -15,3 +15,9 @@ export default {
 	props: ['isOn']
 }
 </script>
+
+<style scoped>
+.sensor-icon {
+  width: 24px;
+}
+</style>

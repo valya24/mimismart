@@ -15,16 +15,28 @@
 					'sensor': sensor,
 					'no-value': value == undefined,
 					'selected': selected,
+					'ignored': state === '02',
 					'--ignoring': isYellow
 				}"
 			>
 				<div class="device-address">{{ addr }}</div>
+        <div v-if="icon === 'gate'" class="jalousie-gate">
+          <icon-comp :iconName="`icon-${icon}`" :value="jalousieOrGate" />
+        </div>
+        <div v-else-if="icon === 'jalousie120'" class="jalousie-gate">
+          <icon-comp :iconName="`icon-${icon}`" :value="jalousieOrGate" />
+        </div>
+        <div v-else-if="icon === 'plisse'" class="jalousie-gate">
+          <icon-comp :iconName="`icon-${icon}`" :value="jalousieOrGate" />
+        </div>
 				<icon-comp
 					:iconName="'icon-'+computedIcon"
 					:isOn="iconIsOn"
 					:value="value"
+          :state="state"
 					:ignoring="isYellow"
-					v-if="!isImportScript"
+          :class="{ '--disabled': !sensorData }"
+					v-else-if="!isImportScript"
 				/>
 				<div v-else
 					class="icon-text"
@@ -41,11 +53,10 @@
 					}"
 				>
 					<transition name="counter-long" mode="out-in">
-						<span :key="computedValue" class="span-value">
-							{{ isNaN(computedValue) ? '--' : computedValue }}
-						</span>
+            <span class="span-value" :key="computedValue" v-html="sensorData ? sensorData : '--'">
+            </span>
 					</transition>
-					<span class="units">{{ units ? units : '' }}</span>
+					<span class="units">{{ units && sensorData ? units : '' }}</span>
 				</span>
 				<span class="caption">{{ caption }}</span>
 				<img src="@/assets/check-cir.svg" class="check" alt />
@@ -62,7 +73,7 @@
 <script>
 import sensorDeviceInterfaces from "@/utils/sensorDeviceInterfaces.js";
 
-import { hsvToHex } from "@/utils/transformers.js";
+import { hsvToHex, hexToDecimal, replaceAt } from "@/utils/transformers.js";
 
 import {
 	JALOUSIE_CLOSING,
@@ -72,19 +83,18 @@ import {
 } from "@/utils/consts/consts.js";
 
 import { ValveHeatingController } from "@/utils/deviceControllers";
+import {mapActions, mapGetters} from 'vuex';
 
 export default {
 	props: [
 		// "isOn",
 		"addr",
+    "state",
+    "idRoom",
 		"selected",
 		// "system"
 		"itemData"
 	],
-	// model: {
-	// 	event: "change",
-	// 	prop: "isOn"
-	// },
 	data() {
 		return {
 			touching: false,
@@ -92,14 +102,70 @@ export default {
 			lockTouching: true,
 			touchEnded: false,
       isOnDevice: false,
-			sIconText: '<s/>'
+			sIconText: '<s/>',
+      activeDevice: null,
+      roomId: '0-0',
+      sensorData: null,
+      jalousieOrGate: ''
 		}
 	},
-	computed: {
-		//	TODO: Maybe refactor
-		watchedSensors() {
-			return this.$store.state.modules.watchedSensors.watchedSensorDevices;
-		},
+  async mounted() {
+    this.roomId = this.$route.params.id
+    await this.subscribeRequest(this.addr);
+    this.checkDoorSensor(this.state)
+  },
+  destroyed() {
+    if (this.addr) {
+      // this.stopSubscribeRequest(this.addr);
+    }
+  },
+  watch: {
+    addr: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.subscribeRequest(this.addr);
+        }
+      }
+    },
+    selectedDevice: {
+      deep: true,
+      handler(val) {
+        this.activeDevice = val
+      }
+    },
+    sensorDevice: {
+      deep: true,
+      handler(val) {
+        if (this.addr === val.addr) {
+          this.checkDoorSensor(val.status)
+
+          if (this.icon === 'gate') {
+            this.jalousieOrGate = val.status
+
+            this.$store.commit('setGateData', {isActive: val.status});
+            this.subscribeRequest(this.addr);
+          } else if (this.icon === 'jalousie120' || this.icon === 'plisse') {
+            this.jalousieOrGate = val.status
+
+            this.$store.commit('setJalousieData', {isActive: val.status, addr: this.addr});
+            this.subscribeRequest(this.addr);
+          }
+        }
+      }
+    },
+    state(val) {
+      this.checkDoorSensor(val)
+    }
+  },
+  computed: {
+    ...mapGetters(['lamp', 'jalousie', 'gate', 'currentRoomAddrs']),
+    ...mapGetters('ws', ['selectedDevice', 'allDevices', 'sensorDevice']),
+    //	TODO: Maybe refactor
+    watchedSensors() {
+      return this.$store.state.modules.watchedSensors.watchedSensorDevices;
+    },
 
 		item() {
 			return this.$store.state.itemMap[this.addr] ? this.$store.state.itemMap[this.addr] : this.itemData;
@@ -111,20 +177,54 @@ export default {
 			return this.item.__ ? this.item.__.status : [];
 		},
 		icon() {
+      if (this.item.__.icon) {
+        return this.item.__.icon
+      } else if (this.item.attributes.image) {
+        return this.item.attributes.image
+      } else if (this.item.attributes.type) {
+        return this.item.attributes.type
+      }else if (this.item.attributes['sub-type']) {
+        return this.item.attributes['sub-type']
+      }
+
 			return this.item.__ ? this.item.__.icon : '';
 		},
-		iconIsOn() {
+    iconIsOn() {
+      if (this.itemData.attributes.addr === this.addr) {
+        switch (this.icon) {
+          case "conditioner":
+          case "closing-switch":
+          case "rgb-lamp":
+          case "air-fan":
+          case "convector-fan":
+          case "sphere-off":
+          case "dimer-lamp":
+          case "plisse":
+            return this.state?.charAt(1) === '1';
+          case "gate":
+          case "jalousie120":
+          case "framuga-open":
+            return this.jalousieOrGate === '01' || this.jalousie.active === '01';
+          case "valve":
+            return this.state?.charAt(1) !== '8'
+          default:
+            return this.state === '01'
+        }
+      } else {
+        return this.isOnDevice
+      }
 			// return this.icon && this.icon.includes('glass-blur') ? !this.isOn : this.isOn;
-			return this.icon && this.icon.includes('dimer-lamp') ? !this.isOnDevice : this.isOnDevice;
+			// return this.icon && this.icon.includes('dimer-lamp') ? !this.isOnDevice : this.isOnDevice;
+      // return this.isOnDevice;
 		},
 		name() {
-			return this.item.attributes.name.replace(/(\\10|&#10;)/g, '\n');
+			return this.item.attributes.name?.replace(/(\\10|&#10;)/g, '\n');
 		},
 		type() {
 			return this.item.attributes.type || '';
 		},
 		sensor() {
-			return this.item.attributes.type && this.item.attributes.type.includes('sensor')
+			return (this.item.attributes.type && this.item.attributes.type.includes('sensor')) || this.item.attributes['sub-type'] === 'sensor'
 		},
 		system() {
 			return this.item.attributes.system == 'yes';
@@ -208,24 +308,23 @@ export default {
 			let caption = '';
 
 			if (this.item.attributes.type == 'valve-heating') {
-				let controller = this.$store.state.controllers[this.addr];
-				if (!controller) {
-					controller = new ValveHeatingController({
-						addr: this.addr,
-						status: this.status,
-						item: this.item
-					});
-					this.$store.commit('saveController', controller);
-				}
-
-				if (controller.autoModeActive) {
-					caption = this.$t('Auto');
+        let controller = new ValveHeatingController({
+          addr: this.addr,
+          status: this.state,
+          item: this.item
+        });
+        this.$store.commit('saveController', controller);
+				if (controller.mode) {
+					caption = this.$t(controller.mode);
 				}
 			}
 
 			return caption;
 		},
 		units() {
+      if (this.item?.attributes.dim) {
+        return this.item.attributes.dim
+      }
 			return sensorDeviceInterfaces[this.item.attributes.type] &&
 				sensorDeviceInterfaces[this.item.attributes.type].units
 				? sensorDeviceInterfaces[this.item.attributes.type].units
@@ -240,25 +339,30 @@ export default {
 		computedIcon() {
 			let icon = this.icon;
 			if (icon == "leak") {
-				switch (this.leakState) {
-					case 'wet':
-						return 'leak-wet';
-					case 'dry':
-						return 'leak-dry';
-					case 'ignoring':
+				switch (this.state) {
+					case '01':
 						return 'leak-maintenance';
-					default: return 'leak-dry';
+					case '00':
+						return 'leak-dry';
+					case '02':
+						return 'leak-wet';
+					default:
+            return 'leak-dry';
 				}
 			}
 			if (icon == "door") {
 				return +this.value > 0 ? "door-open" : "door";
 			}
+
+      if (this.item.attributes['sub-type'] && this.item.attributes['sub-type'] === 'sensor') {
+        return 'other-devices'
+      }
 			return icon;
 		},
 		computedValue() {
 			let val = this.value;
 			if (this.item.attributes.text) {
-				let texts = this.item.attributes.text.split(';');
+				let texts = this.item.attributes?.text.split(';');
 
 				return val > 0 ? texts[1] : texts[0];
 			}
@@ -280,28 +384,105 @@ export default {
 		}
 	},
 	methods: {
-		handleClick() {
-      let isOn = localStorage.getItem('item-status');
+    ...mapActions('modules/settings', ['subscribeRequest', 'stopSubscribeRequest']),
+    checkDoorSensor (value) {
+      if(this.item.__.icon === 'door') {
+        const texts = this.item.attributes.text?.split(';')
+        if (this.state === '00' ) {
+          this.sensorData = this.item.attributes.text ? texts[0] : 'Закрыто'
+        } else if(this.state === '01' ){
+          this.sensorData = this.item.attributes.text ? texts[1] : 'Открыто'
+        } else {
+          this.sensorData = ''
+        }
 
-      let status
-      if (isOn === '0') {
-        status = 0
-        this.isOnDevice = false
-        localStorage.setItem('item-status', '1');
-      } else if (isOn === '1') {
-        localStorage.setItem('item-status', '0');
-        this.isOnDevice = true
-        status = 1
+      } else {
+        this.jalousieOrGate = value
+        this.sensorData = hexToDecimal(value, this.icon)
       }
-			this.$emit('change', {
-				...this.itemData,
-				addr: this.addr,
-				isOn: status
-			});
-			// this.touching = true;
-			// this.lockTouching = true;
-			// setTimeout(() => { this.touching = false; this.lockTouching = false }, 200);
-		},
+    },
+		async handleClick() {
+      console.log(this.state, this.item)
+
+      switch (this.item.__.icon) {
+        case "conditioner":
+        case "dimer-lamp":
+        case "closing-switch":
+        case "convector-fan":
+        case "light-scheme":
+        case "rgb-lamp":
+        case "gate":
+        case "plisse":
+        case "air-fan":
+        case "sphere-off":
+        case "jalousie120":
+        case "framuga-open":
+        case "valve-heating":
+          // eslint-disable-next-line no-case-declarations
+          let isActive = +this.state.charAt(1) ? '0' : '1';
+          // eslint-disable-next-line no-case-declarations
+          const active = replaceAt(this.state, 1, isActive);
+          await this.$store.dispatch('setStatus', {
+            addr: this.addr,
+            status: active
+          })
+          break;
+        case "valve":
+          switch (this.state) {
+            case '08':
+              await this.$store.dispatch('setStatus', {
+                addr: this.addr,
+                status: '01'
+              });
+              break;
+            case '09':
+              await this.$store.dispatch('setStatus', {
+                addr: this.addr,
+                status: '00'
+              });
+              break
+            default:
+              // eslint-disable-next-line no-case-declarations
+              let status
+              if (this.state === '00') {
+                status = 1
+                this.isOnDevice = false
+              } else if (this.state === '01') {
+                this.isOnDevice = true
+                status = 0
+              }
+              await this.$emit('change', {
+                ...this.itemData,
+                addr: this.addr,
+                isOn: status || '00'
+              });
+          }
+          break;
+        default:
+          // eslint-disable-next-line no-case-declarations
+          let status
+          if (this.state === '00') {
+            status = 1
+            this.isOnDevice = false
+          } else if (this.state === '01') {
+            this.isOnDevice = true
+            status = 0
+          }
+          await this.$emit('change', {
+            ...this.itemData,
+            addr: this.addr,
+            isOn: status || '00'
+          });
+      }
+
+      // let addrs;
+      // if (this.roomId) {
+      //   addrs = this.$store.getters.getRoomItems(this.roomId);
+      // } else {
+      //   addrs = this.$store.getters.getRoomItems(this.idRoom);
+      // }
+      await this.subscribeRequest(this.currentRoomAddrs)
+    },
 		handleTouchstart() {
 			this.touchEnded = false;
 			this.holding = false;
@@ -324,15 +505,128 @@ export default {
 			}
 		},
 		handleHold() {
+      switch (this.icon) {
+        case "jalousie120":
+        case "framuga-open":
+          this.$store.commit('setJalousieData', {isActive: this.jalousieOrGate, addr: this.addr});
+          break;
+        case "gate":
+          this.$store.commit('setGateData', {isActive: this.state});
+          break;
+        case "conditioner":
+          // eslint-disable-next-line no-case-declarations
+          const temp = hexToDecimal(this.state)
+          // eslint-disable-next-line no-case-declarations
+          const conditionerData = {
+            temp,
+            state: this.state,
+            isActive: this.state.charAt(1),
+            mode: this.state.charAt(0),
+            powerLevel: this.state.charAt(9),
+            vaneHorMode: this.state.charAt(7),
+            vaneVerMode: this.state.charAt(6)
+          };
+          this.$store.commit('setConditionerData', conditionerData)
+          break;
+        case "lamp":
+        case "pump":
+        case "meter":
+        case "leak":
+        case "camera":
+        case "script":
+        case "swing":
+        case "plisse":
+        case "convector-floor":
+        case "sphere-on":
+          this.$store.commit('setLampData', {isActive: this.state});
+          break;
+        case "valve-heating":
+          // eslint-disable-next-line no-case-declarations
+          const valveHeatingData = {
+            state: this.state,
+            mode: this.state.charAt(0),
+            active: this.state.slice(1, 2),
+            temp: +hexToDecimal(this.state.slice(2, 6)),
+            roomTemp: +hexToDecimal(this.state.slice(6, 10)),
+          };
+          this.$store.commit('setValveHeatingData', valveHeatingData);
+          break;
+        case "dimer-lamp":
+        case "sphere-off":
+        case "closing-switch":
+        case "convector-fan":
+          // eslint-disable-next-line no-case-declarations
+          const dimmerLampData = {
+            addr: this.addr,
+            active: this.state.slice(1, 2),
+            bright: Math.ceil(hexToDecimal(`00${this.state.slice(2, 4)}`, this.icon))
+          };
+          this.$store.commit('setDimmerLampData', dimmerLampData);
+          break;
+        case "rgb-lamp":
+          // eslint-disable-next-line no-case-declarations
+          const rgbLampData = {
+            active: this.state.slice(1, 2),
+            bright: Math.ceil(hexToDecimal(`00${this.state.slice(2, 4)}`, this.icon)),
+            state: this.state
+          };
+          this.$store.commit('setRgbLampData', rgbLampData);
+          break;
+        case "valve":
+          switch (this.state) {
+            case '08':
+              this.$store.commit('setValveData', { status: '08' });
+              break;
+            case '09':
+              this.$store.commit('setValveData', { status: '09' });
+              break
+            default:
+              // eslint-disable-next-line no-case-declarations
+              let status
+              if (this.state === '00') {
+                status = 1
+                this.isOnDevice = false
+              } else if (this.state === '01') {
+                this.isOnDevice = true
+                status = 0
+              }
+
+              this.$store.commit('setValveData', { status: `0${status}` });
+          }
+          break;
+        default:
+          break
+      }
+
 			this.$emit('touchhold');
+      this.subscribeRequest(this.addr)
 			this.touching = false;
 			this.holding = true;
-		}
+		},
 	}
 };
 </script>
 
 <style lang="less" scoped>
+.device-as-icon {
+  .ignored {
+    //background: #FEFFC9!important;
+
+    .span-value {
+      color: #535050;
+    }
+  }
+  .icon-tile .icon-holder {
+    width: 50px;
+  }
+
+  .jalousie-gate {
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
 .counter-long-enter-active, .counter-long-leave-active {
   transition: .15s;
 }
@@ -349,6 +643,7 @@ export default {
 	transform: translateY(15%);
 }
 .span-value {
+  text-align: center;
 	display: inline-block;
 	margin-right: 3px;
 }

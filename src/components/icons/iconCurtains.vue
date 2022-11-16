@@ -2,6 +2,7 @@
 	<div class="icon-curtains"
 		:class="{ 
 			on: isOn,
+			'--disabled': !value,
 			'--closed': value == JALOUSIE_CLOSED,
 			'--open': value == JALOUSIE_OPEN,
 			'--closing': value == JALOUSIE_CLOSING,
@@ -15,7 +16,7 @@
 					d="M1 1H23C23.5523 1 24 1.44772 24 2C24 2.55228 23.5523 3 23 3H1C0.447715 3 0 2.55228 0 2C0 1.44772 0.447715 1 1 1Z"
 					class="fill-variable"
 				/>
-				<g id="curtain-left" ref="curtainLeft">
+				<g :id="value ? 'curtain-left' : ''" ref="curtainLeft">
 					<rect class="fill-const" x="8" y="15" width="1" height="7" rx="0.5" />
 					<rect class="fill-const" x="5" y="15" width="1" height="7" rx="0.5" />
 					<path
@@ -25,7 +26,7 @@
 						class="fill-variable"
 					/>
 				</g>
-				<g id="curtain-right" ref="curtainRight">
+				<g :id="value ? 'curtain-right': ''" ref="curtainRight">
 					<rect class="fill-const" x="15" y="15" width="1" height="7" rx="0.5" fill="#A6ABFF" />
 					<rect class="fill-const" x="18" y="15" width="1" height="7" rx="0.5" fill="#A6ABFF" />
 					<path
@@ -53,7 +54,8 @@ export default {
 		}
 	},
 	watch: {
-		value() {
+		value(val) {
+      if (!val) return false
 			// if (newValue != 2 || newValue != 3) {
 				let transform = window.getComputedStyle(this.$refs.curtainRight).transform;
 				if (!transform || transform == 'none' || !transform.split('(')[1]) return false;

@@ -70,11 +70,8 @@
 			</template>
 
 			<template v-if="activeTabIndex == 1">
-				<FormRow :label="$t('Remote server address')">
-					<Textfield v-model="settings.network.remoteIp" @change="handleRemoteIpChange" />
-				</FormRow>
 				<FormRow :label="$t('Access key')">
-					<Textfield v-model="settings.network.key" @change="handleKeyChange" />
+					<Textfield v-model="settings.network.key" type="password" @change="handleKeyChange" />
 				</FormRow>
 				<FormRow :label="$t('Remote mode')">
 					<Dropdown class="big" v-model="settings.network.remoteMode" @change="handleRemoteModeChange">
@@ -83,10 +80,27 @@
 						<option value="Auto">{{ $t('Auto') }}</option>
 					</Dropdown>
 				</FormRow>
+        <FormRow :label="$t('Remote Ip')">
+          <Textfield v-model="settings.network.remoteIp" @change="handleRemoteIpChange" />
+        </FormRow>
+        <FormRow :label="$t('Remote port')">
+          <Textfield v-model="settings.network.remotePort" @change="handleRemotePortChange" />
+        </FormRow>
+        <FormRow :label="$t('Remote web port')">
+          <Textfield v-model="settings.network.webPort" @change="handleWebPortChange" />
+        </FormRow>
 				<FormRow :label="$t('Local server address')">
-					<Textfield v-model="settings.network.localIp" @change="handleLocalIpChange" />
+          <Textfield v-model="settings.network.localIp" @change="handleLocalIpChange" />
 				</FormRow>
-				
+        <FormRow :label="$t('Local web port')">
+          <Textfield v-model="settings.network.localWebPort" @change="handleLocalWebPortChange" />
+				</FormRow>
+        <FormRow :label="$t('Local port')">
+          <Textfield v-model="settings.network.localPort" @change="handleLocalPortChange" />
+        </FormRow>
+        <FormRow :label="$t('Password')">
+          <Textfield v-model="settings.network.password" type="password" @change="handleSettingsPasswordChange"/>
+        </FormRow>
 				<FormRow :label="$t('Reset local address')">
 					<app-button :label="$t('Reset')" @click.native="handleLocalIpReset" />
 				</FormRow>
@@ -129,6 +143,7 @@ import Header from "@/components/Header";
 import FormRow from "@/components/etc/FormRow";
 
 import { debounce } from "@/utils/functions.js";
+import {mapActions} from "vuex";
 
 export default {
 	data() {
@@ -141,7 +156,10 @@ export default {
 			invalidLogPass: false
 		};
 	},
-	computed: {
+  destroyed() {
+    this.loadLogicXML()
+  },
+  computed: {
 		tabs() {
 			return [
 				this.$t("General"),
@@ -161,14 +179,15 @@ export default {
 		}
 	},
   watch: {
-    settings: {
-      deep: true,
-      handler() {
-        this.$store.dispatch('loadLogicXML')
-      }
-    }
+    // settings: {
+    //   deep: true,
+    //   handler() {
+    //     this.$store.dispatch('loadLogicXML')
+    //   }
+    // }
   },
 	methods: {
+    ...mapActions(['loadLogicXML']),
 		swapLoggedin() {
 			this.isLoggedin = !this.isLoggedin;
 		},
@@ -184,39 +203,107 @@ export default {
 		//	TODO: Refactor
 		handleRemoteIpChange() {
 			this.handleSettingChange();
-			this.$store.dispatch('ws/sendMessage', {
-				"request":"executeShiCode",
-				"code": `changeSettings('srv-addr-remote', '${this.settings.network.remoteIp}')`
-			});
+			// this.$store.dispatch('ws/sendMessage', {
+			// 	"request":"executeShiCode",
+			// 	"code": `changeSettings('srv-addr-remote', '${this.settings.network.remoteIp}')`
+			// });
+		},
+    handleRemotePortChange() {
+			this.handleSettingChange();
+			// this.$store.dispatch('ws/sendMessage', {
+			// 	"request":"executeShiCode",
+			// 	"code": `changeSettings('srv-addr-remote', '${this.settings.network.remotePort}')`
+			// });
+		},
+    handleLocalPortChange() {
+			this.handleSettingChange();
+			// this.$store.dispatch('ws/sendMessage', {
+			// 	"request":"executeShiCode",
+			// 	"code": `changeSettings('srv-addr-remote', '${this.settings.network.localPort}')`
+			// });
+		},
+    handleWebPortChange() {
+			this.handleSettingChange();
+			// this.$store.dispatch('ws/sendMessage', {
+			// 	"request":"executeShiCode",
+			// 	"code": `changeSettings('srv-addr-remote', '${this.settings.network.webPort}')`
+			// });
 		},
 		handleLocalIpChange() {
 			this.handleSettingChange();
-			this.$store.dispatch('ws/sendMessage', {
-				"request":"executeShiCode",
-				"code": `changeSettings('srv-addr', '${this.settings.network.localIp}')`
-			});
+			// this.$store.dispatch('ws/sendMessage', {
+			// 	"request":"executeShiCode",
+			// 	"code": `changeSettings('srv-addr', '${this.settings.network.localIp}')`
+			// });
+		},
+    handleLocalWebPortChange() {
+			this.handleSettingChange();
+			// this.$store.dispatch('ws/sendMessage', {
+			// 	"request":"executeShiCode",
+			// 	"code": `changeSettings('srv-addr', '${this.settings.network.localWebPort}')`
+			// });
 		},
 		handleKeyChange() {
 			this.handleSettingChange();
-			this.$store.dispatch('ws/sendMessage', {
-				"request":"executeShiCode",
-				"code": `changeSettings('pass-key', '${this.settings.network.key}')`
-			});
+			// this.$store.dispatch('ws/sendMessage', {
+			// 	"request":"executeShiCode",
+			// 	"code": `changeSettings('pass-key', '${this.settings.network.key}')`
+			// });
 		},
+    connectRemotely() {
+      this.$set(this.settings.network, 'remoteIp', '77.91.110.138');
+      this.$set(this.settings.network, 'remotePort', '55551');
+      this.$set(this.settings.network, 'webPort', '12580');
+    },
+    connectLocally() {
+      this.$set(this.settings.network, 'localIp', '192.168.1.125');
+      this.$set(this.settings.network, 'localPort', '15580');
+      this.$set(this.settings.network, 'localWebPort', '54441');
+    },
 		handleRemoteModeChange() {
+      switch (this.settings.network.remoteMode) {
+        case "Yes":
+          this.connectRemotely()
+          break;
+        case "No":
+          this.connectLocally()
+          break
+        case "Auto":
+          this.loadLogicXML()
+              .then(res => {
+                if (!res) {
+                  this.connectRemotely()
+                }
+              })
+         break
+        default:
+          console.log(this.settings.network.remoteMode, 'default')
+      }
 			this.handleSettingChange();
-			console.log(this.settings.network.remoteMode)
-			this.$store.dispatch('ws/sendMessage', {
-				"request":"executeShiCode",
-				"code": `changeSettings('mode-is-remote', '${this.settings.network.remoteMode}')`
-			});
+			// this.$store.dispatch('ws/sendMessage', {
+			// 	"request":"executeShiCode",
+			// 	"code": `changeSettings('mode-is-remote', '${this.settings.network.remoteMode}')`
+			// });
 		},
+    handleSettingsPasswordChange(){
+      this.handleSettingChange();
+      // this.$store.dispatch('ws/sendMessage', {
+      //   "request":"executeShiCode",
+      //   "code": `changeSettings('password', '${this.settings.network.password}')`
+      // });
+    },
 
 		//	-----
 
 		handleLocalIpReset() {
 			this.$set(this.settings.network, 'localIp', '192.168.1.125');
+			this.$set(this.settings.network, 'localPort', '54441');
+			this.$set(this.settings.network, 'localWebPort', '15580');
+			this.$set(this.settings.network, 'remoteIp', '95.84.154.146');
+			this.$set(this.settings.network, 'remotePort', '54441');
+			this.$set(this.settings.network, 'webPort', '15580');
 			this.handleLocalIpChange();
+			this.handleRemoteIpChange();
 		},
 		login() {
 			let user = this.users.find( user => user.name == this.username && user.password == this.password );
@@ -241,10 +328,10 @@ export default {
 			this.invalidLogPass = false;
 		},
 		openOldSettings() {
-			this.$store.dispatch('ws/sendMessage', {
-				"request":"executeShiCode",
-				"code": "openSettings()"
-			});
+			// this.$store.dispatch('ws/sendMessage', {
+			// 	"request":"executeShiCode",
+			// 	"code": "openSettings()"
+			// });
 		}
 	},
 	components: {
@@ -264,6 +351,13 @@ export default {
 	// max-width: 100%;
 	overflow-x: hidden;
 }
+
+.port-ip-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .login-form {
 	display: flex;
 	flex-direction: column;
